@@ -107,9 +107,16 @@ export const useImageUpload = () => {
   const [imageFile, setImageFile] = useState(null);
   const fileUpload = useFileUpload();
 
-  const selectImage = useCallback((file) => {
-    if (!file) {
+  const selectImage = useCallback((file, previewUrl = null) => {
+    if (!file && !previewUrl) {
       setPreview(null);
+      setImageFile(null);
+      return;
+    }
+
+    // If only preview URL is provided (for existing images)
+    if (!file && previewUrl) {
+      setPreview(previewUrl);
       setImageFile(null);
       return;
     }

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useProjects } from '../../hooks/usePortfolio';
 import { useImageUpload } from '../../hooks/useFileUpload';
+import portfolioService from '../../services/portfolioService';
 
 const ProjectsManager = () => {
   const { projects, loading, createProject, updateProject, deleteProject } = useProjects();
@@ -93,6 +94,12 @@ const ProjectsManager = () => {
         status: project.status || 'active',
         order: project.order || 0
       });
+
+      // Set existing image preview if project has an image
+      if (project.image) {
+        const imageUrl = portfolioService.getFileView(project.image);
+        selectImage(null, imageUrl); // Set preview without file
+      }
     } else {
       setEditingProject(null);
       setFormData({
@@ -105,6 +112,7 @@ const ProjectsManager = () => {
         status: 'active',
         order: 0
       });
+      clearImage(); // Clear any existing image
     }
     clearImage();
     setError('');
@@ -114,6 +122,7 @@ const ProjectsManager = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingProject(null);
+    setTechInput('');
     clearImage();
     setError('');
   };
@@ -137,10 +146,14 @@ const ProjectsManager = () => {
         image: imageId
       };
 
+      console.log('Saving project data:', projectData);
+
       if (editingProject) {
-        await updateProject(editingProject.$id, projectData);
+        await portfolioService.updateProject(editingProject.$id, projectData);
+        console.log('Project updated successfully');
       } else {
-        await createProject(projectData);
+        await portfolioService.createProject(projectData);
+        console.log('Project created successfully');
       }
 
       closeModal();

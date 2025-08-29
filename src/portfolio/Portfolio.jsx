@@ -2,7 +2,7 @@
 
     import React, { useEffect, useState } from 'react'
     import { motion, AnimatePresence } from 'framer-motion'
-    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, GraduationCap, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X } from 'lucide-react'
+    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X } from 'lucide-react'
     import { animateScroll as scroll, Link as ScrollLink } from 'react-scroll'
     import {
         FaCss3Alt,
@@ -69,7 +69,7 @@
         const [isMenuOpen, setIsMenuOpen] = useState(false)
 
         // Dynamic data hooks
-        const { projects, loading: projectsLoading } = useProjects(true) // Get featured projects
+        const { projects, loading: projectsLoading } = useProjects() // Get all projects
         const { skills, loading: skillsLoading } = useSkills()
         const { experiences, loading: experiencesLoading } = useExperience()
         const { about, loading: aboutLoading } = useAbout()
@@ -485,28 +485,7 @@
                         </div>
                     </motion.div>
 
-                    {/* Education Section */}
-                    <motion.div
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                        variants={fadeInUp}
-                        className="bg-gray-50 dark:bg-gray-800/50 py-20"
-                    >
-                        <div className="max-w-7xl mx-auto px-6">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Education</h2>
-                            <div className="space-y-6">
-                                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md flex items-center">
-                                    <GraduationCap className="h-12 w-12 text-blue-500 mr-6 flex-shrink-0" />
-                                    <div>
-                                        <h3 className="text-xl font-semibold dark:text-white">Bachelor of Computer Science</h3>
-                                        <p className="text-gray-600 dark:text-gray-300">Your University, 2016-2020</p>
-                                        <p className="text-gray-500 dark:text-gray-400 mt-2">Focus on Web Technologies and Software Engineering</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
+
 
                     {/* Work Experience Section */}
                     <motion.div

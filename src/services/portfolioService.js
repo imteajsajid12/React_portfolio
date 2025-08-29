@@ -62,7 +62,8 @@ export class PortfolioService {
       if (featured !== null) {
         queries.push(Query.equal("featured", featured));
       }
-      queries.push(Query.equal("status", "active"));
+      // Only filter by status if it's not null/undefined
+      queries.push(Query.notEqual("status", "deleted"));
 
       return await this.databases.listDocuments(
         conf.appwriteDatabaseId,

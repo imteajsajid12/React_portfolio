@@ -12,7 +12,10 @@ export const setupDatabase = async () => {
     const databases = new Databases(client);
     const storage = new Storage(client);
 
-    console.log('Setting up database collections...');
+    console.log('🚀 Setting up database collections...');
+    console.log('📊 Database ID:', conf.appwriteDatabaseId);
+    console.log('🏢 Project ID:', conf.appwriteProjectId);
+    console.log('🌐 Endpoint:', conf.appwriteUrl);
 
     // Collection schemas
     const collections = [
@@ -95,8 +98,8 @@ export const setupDatabase = async () => {
     // Create collections
     for (const collection of collections) {
       try {
-        console.log(`Creating collection: ${collection.name}`);
-        
+        console.log(`📝 Creating collection: ${collection.name} (ID: ${collection.id})`);
+
         const createdCollection = await databases.createCollection(
           conf.appwriteDatabaseId,
           collection.id,
@@ -109,7 +112,7 @@ export const setupDatabase = async () => {
           ]
         );
 
-        console.log(`Collection ${collection.name} created successfully`);
+        console.log(`✅ Collection ${collection.name} created successfully`);
 
         // Create attributes
         for (const attr of collection.attributes) {
