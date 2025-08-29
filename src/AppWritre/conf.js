@@ -1,17 +1,18 @@
 import conf from "../conf/conf";
-import { Client, Account, ID, Database , Storage , Query } from "appwrite";
+import { Client, Account, ID, Databases, Storage, Query } from "appwrite";
 
 export class Service {
-  clint = new Client()
-    databases;
-    storage;
-    constructor() {
-      this.clint
-        .setEndpoint(conf.appWriteUrl)
-        .setProject(conf.appWriteProjectId);
-      this.databases = new Database(this.clint);
-      this.storage = new Storage(this.clint);
-    }
+  client = new Client();
+  databases;
+  storage;
+
+  constructor() {
+    this.client
+      .setEndpoint(conf.appWriteEndpoint)
+      .setProject(conf.appWriteProjectId);
+    this.databases = new Databases(this.client);
+    this.storage = new Storage(this.client);
+  }
     // create post
     async createPost(tite , slug , images , content,status , imageId) {
     {
