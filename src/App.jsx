@@ -5,6 +5,7 @@ import { AdminRoute } from './components/auth/ProtectedRoute';
 
 // Portfolio Components
 import Portfolio from './portfolio/Portfolio';
+import BlogPage from './components/blog/BlogPage';
 
 // Admin Components
 import Login from './components/auth/Login';
@@ -13,7 +14,9 @@ import DashboardOverview from './components/admin/DashboardOverview';
 import ProjectsManager from './components/admin/ProjectsManager';
 import SkillsManager from './components/admin/SkillsManager';
 import ExperienceManager from './components/admin/ExperienceManager';
-
+import CertificationsManager from './components/admin/CertificationsManager';
+import BlogCategoriesManager from './components/admin/BlogCategoriesManager';
+import BlogPostsManager from './components/admin/BlogPostsManager';
 import AboutManager from './components/admin/AboutManager';
 import ContactManager from './components/admin/ContactManager';
 
@@ -31,6 +34,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Portfolio />} />
+            <Route path="/blog" element={<BlogPage />} />
 
             {/* Test Route */}
             <Route path="/test" element={<AppwriteTest />} />
@@ -49,6 +53,9 @@ function App() {
               <Route path="projects" element={<ProjectsManager />} />
               <Route path="skills" element={<SkillsManager />} />
               <Route path="experience" element={<ExperienceManager />} />
+              <Route path="certifications" element={<CertificationsManager />} />
+              <Route path="blog-categories" element={<BlogCategoriesManager />} />
+              <Route path="blog-posts" element={<BlogPostsManager />} />
               <Route path="about" element={<AboutManager />} />
               <Route path="messages" element={<ContactManager />} />
               <Route path="settings" element={<SettingsManager />} />

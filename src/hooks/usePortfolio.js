@@ -316,3 +316,210 @@ export const useContacts = () => {
     updateContactStatus
   };
 };
+
+// Hook for managing certifications
+export const useCertifications = (featured = null) => {
+  const [certifications, setCertifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCertifications = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await portfolioService.getCertifications(featured);
+      setCertifications(response.documents || []);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching certifications:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [featured]);
+
+  const createCertification = useCallback(async (certificationData) => {
+    try {
+      const newCertification = await portfolioService.createCertification(certificationData);
+      setCertifications(prev => [newCertification, ...prev]);
+      return newCertification;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const updateCertification = useCallback(async (certificationId, certificationData) => {
+    try {
+      const updatedCertification = await portfolioService.updateCertification(certificationId, certificationData);
+      setCertifications(prev =>
+        prev.map(cert => cert.$id === certificationId ? updatedCertification : cert)
+      );
+      return updatedCertification;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const deleteCertification = useCallback(async (certificationId) => {
+    try {
+      await portfolioService.deleteCertification(certificationId);
+      setCertifications(prev => prev.filter(cert => cert.$id !== certificationId));
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCertifications();
+  }, [fetchCertifications]);
+
+  return {
+    certifications,
+    loading,
+    error,
+    createCertification,
+    updateCertification,
+    deleteCertification,
+    refetch: fetchCertifications
+  };
+};
+
+// Hook for managing blog categories
+export const useBlogCategories = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await portfolioService.getBlogCategories();
+      setCategories(response.documents || []);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching blog categories:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const createCategory = useCallback(async (categoryData) => {
+    try {
+      const newCategory = await portfolioService.createBlogCategory(categoryData);
+      setCategories(prev => [newCategory, ...prev]);
+      return newCategory;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const updateCategory = useCallback(async (categoryId, categoryData) => {
+    try {
+      const updatedCategory = await portfolioService.updateBlogCategory(categoryId, categoryData);
+      setCategories(prev =>
+        prev.map(cat => cat.$id === categoryId ? updatedCategory : cat)
+      );
+      return updatedCategory;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const deleteCategory = useCallback(async (categoryId) => {
+    try {
+      await portfolioService.deleteBlogCategory(categoryId);
+      setCategories(prev => prev.filter(cat => cat.$id !== categoryId));
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  return {
+    categories,
+    loading,
+    error,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    refetch: fetchCategories
+  };
+};
+
+// Hook for managing blog posts
+export const useBlogPosts = (categoryId = null, status = 'published') => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await portfolioService.getBlogPosts(categoryId, status);
+      setPosts(response.documents || []);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching blog posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryId, status]);
+
+  const createPost = useCallback(async (postData) => {
+    try {
+      const newPost = await portfolioService.createBlogPost(postData);
+      setPosts(prev => [newPost, ...prev]);
+      return newPost;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const updatePost = useCallback(async (postId, postData) => {
+    try {
+      const updatedPost = await portfolioService.updateBlogPost(postId, postData);
+      setPosts(prev =>
+        prev.map(post => post.$id === postId ? updatedPost : post)
+      );
+      return updatedPost;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  const deletePost = useCallback(async (postId) => {
+    try {
+      await portfolioService.deleteBlogPost(postId);
+      setPosts(prev => prev.filter(post => post.$id !== postId));
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  return {
+    posts,
+    loading,
+    error,
+    createPost,
+    updatePost,
+    deletePost,
+    refetch: fetchPosts
+  };
+};

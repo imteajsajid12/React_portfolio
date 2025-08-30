@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -15,6 +15,7 @@ import {
 import { useProjects } from '../../hooks/usePortfolio';
 import { useImageUpload } from '../../hooks/useFileUpload';
 import portfolioService from '../../services/portfolioService';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 
 const ProjectsManager = () => {
   const { projects, loading, createProject, updateProject, deleteProject } = useProjects();
@@ -33,6 +34,8 @@ const ProjectsManager = () => {
   const [techInput, setTechInput] = useState('');
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, project: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { 
     preview, 
@@ -81,6 +84,18 @@ const ProjectsManager = () => {
     }
   };
 
+  // Effect to handle image loading when editing
+  useEffect(() => {
+    if (editingProject && editingProject.image) {
+      try {
+        const imageUrl = portfolioService.getFileView(editingProject.image);
+        selectImage(null, imageUrl);
+      } catch (error) {
+        console.error('Failed to load project image:', error);
+      }
+    }
+  }, [editingProject, selectImage]);
+
   const openModal = (project = null) => {
     if (project) {
       setEditingProject(project);
@@ -94,12 +109,6 @@ const ProjectsManager = () => {
         status: project.status || 'active',
         order: project.order || 0
       });
-
-      // Set existing image preview if project has an image
-      if (project.image) {
-        const imageUrl = portfolioService.getFileView(project.image);
-        selectImage(null, imageUrl); // Set preview without file
-      }
     } else {
       setEditingProject(null);
       setFormData({
@@ -112,7 +121,7 @@ const ProjectsManager = () => {
         status: 'active',
         order: 0
       });
-      clearImage(); // Clear any existing image
+      clearImage();
     }
     clearImage();
     setError('');
@@ -164,13 +173,25 @@ const ProjectsManager = () => {
     }
   };
 
-  const handleDelete = async (projectId) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      try {
-        await deleteProject(projectId);
-      } catch (err) {
-        setError(err.message || 'Failed to delete project');
-      }
+  const openDeleteModal = (project) => {
+    setDeleteModal({ isOpen: true, project });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, project: null });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.project) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteProject(deleteModal.project.$id);
+      closeDeleteModal();
+    } catch (err) {
+      setError(err.message || 'Failed to delete project');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -297,7 +318,7 @@ const ProjectsManager = () => {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(project.$id)}
+                    onClick={() => openDeleteModal(project)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -595,6 +616,17 @@ const ProjectsManager = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This will permanently remove it from your portfolio."
+        itemName={deleteModal.project?.title}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };

@@ -92,6 +92,56 @@ export const setupDatabase = async () => {
           { key: 'status', type: 'string', size: 50, required: false, default: 'unread' },
           { key: 'createdAt', type: 'string', size: 50, required: false }
         ]
+      },
+      {
+        id: 'portfolio_certifications',
+        name: 'Certifications',
+        attributes: [
+          { key: 'title', type: 'string', size: 255, required: true },
+          { key: 'issuer', type: 'string', size: 255, required: true },
+          { key: 'description', type: 'string', size: 1000, required: false },
+          { key: 'issueDate', type: 'string', size: 20, required: true },
+          { key: 'expiryDate', type: 'string', size: 20, required: false },
+          { key: 'credentialId', type: 'string', size: 255, required: false },
+          { key: 'verificationUrl', type: 'string', size: 500, required: false },
+          { key: 'certificateImage', type: 'string', size: 255, required: false },
+          { key: 'skills', type: 'string', size: 1000, required: false, array: true },
+          { key: 'featured', type: 'boolean', required: false, default: false },
+          { key: 'status', type: 'string', size: 50, required: false, default: 'active' },
+          { key: 'order', type: 'integer', required: false, default: 0 }
+        ]
+      },
+      {
+        id: 'portfolio_blog_categories',
+        name: 'Blog Categories',
+        attributes: [
+          { key: 'name', type: 'string', size: 255, required: true },
+          { key: 'slug', type: 'string', size: 255, required: true },
+          { key: 'description', type: 'string', size: 1000, required: false },
+          { key: 'color', type: 'string', size: 20, required: false, default: '#3B82F6' },
+          { key: 'icon', type: 'string', size: 100, required: false },
+          { key: 'status', type: 'string', size: 50, required: false, default: 'active' },
+          { key: 'order', type: 'integer', required: false, default: 0 }
+        ]
+      },
+      {
+        id: 'portfolio_blog_posts',
+        name: 'Blog Posts',
+        attributes: [
+          { key: 'title', type: 'string', size: 255, required: true },
+          { key: 'slug', type: 'string', size: 255, required: true },
+          { key: 'excerpt', type: 'string', size: 500, required: false },
+          { key: 'content', type: 'string', size: 50000, required: true },
+          { key: 'featuredImage', type: 'string', size: 255, required: false },
+          { key: 'categoryId', type: 'string', size: 255, required: true },
+          { key: 'tags', type: 'string', size: 1000, required: false, array: true },
+          { key: 'status', type: 'string', size: 50, required: false, default: 'draft' },
+          { key: 'featured', type: 'boolean', required: false, default: false },
+          { key: 'readTime', type: 'integer', required: false, default: 5 },
+          { key: 'views', type: 'integer', required: false, default: 0 },
+          { key: 'publishedAt', type: 'string', size: 50, required: false },
+          { key: 'order', type: 'integer', required: false, default: 0 }
+        ]
       }
     ];
 

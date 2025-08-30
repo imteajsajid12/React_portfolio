@@ -427,6 +427,299 @@ export class PortfolioService {
       throw error;
     }
   }
+
+  // ==================== CERTIFICATIONS MANAGEMENT ====================
+
+  async createCertification(certificationData) {
+    try {
+      return await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionCertifications,
+        ID.unique(),
+        {
+          title: certificationData.title,
+          issuer: certificationData.issuer,
+          description: certificationData.description,
+          issueDate: certificationData.issueDate,
+          expiryDate: certificationData.expiryDate,
+          credentialId: certificationData.credentialId,
+          verificationUrl: certificationData.verificationUrl,
+          certificateImage: certificationData.certificateImage,
+          skills: certificationData.skills || [],
+          featured: certificationData.featured || false,
+          status: certificationData.status || "active",
+          order: certificationData.order || 0
+        }
+      );
+    } catch (error) {
+      console.error("Failed to create certification:", error);
+      throw error;
+    }
+  }
+
+  async getCertifications(featured = null) {
+    try {
+      const queries = [Query.orderAsc("order")];
+      if (featured !== null) {
+        queries.push(Query.equal("featured", featured));
+      }
+      queries.push(Query.notEqual("status", "deleted"));
+
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionCertifications,
+        queries
+      );
+    } catch (error) {
+      console.error("Failed to get certifications:", error);
+      throw error;
+    }
+  }
+
+  async getCertification(certificationId) {
+    try {
+      return await this.databases.getDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionCertifications,
+        certificationId
+      );
+    } catch (error) {
+      console.error("Failed to get certification:", error);
+      throw error;
+    }
+  }
+
+  async updateCertification(certificationId, certificationData) {
+    try {
+      return await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionCertifications,
+        certificationId,
+        certificationData
+      );
+    } catch (error) {
+      console.error("Failed to update certification:", error);
+      throw error;
+    }
+  }
+
+  async deleteCertification(certificationId) {
+    try {
+      return await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionCertifications,
+        certificationId
+      );
+    } catch (error) {
+      console.error("Failed to delete certification:", error);
+      throw error;
+    }
+  }
+
+  // ==================== BLOG CATEGORIES MANAGEMENT ====================
+
+  async createBlogCategory(categoryData) {
+    try {
+      return await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogCategories,
+        ID.unique(),
+        {
+          name: categoryData.name,
+          slug: categoryData.slug || categoryData.name.toLowerCase().replace(/\s+/g, '-'),
+          description: categoryData.description,
+          color: categoryData.color || '#3B82F6',
+          icon: categoryData.icon,
+          status: categoryData.status || 'active',
+          order: categoryData.order || 0
+        }
+      );
+    } catch (error) {
+      console.error("Failed to create blog category:", error);
+      throw error;
+    }
+  }
+
+  async getBlogCategories() {
+    try {
+      const queries = [Query.orderAsc("order")];
+      queries.push(Query.equal("status", "active"));
+
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogCategories,
+        queries
+      );
+    } catch (error) {
+      console.error("Failed to get blog categories:", error);
+      throw error;
+    }
+  }
+
+  async getBlogCategory(categoryId) {
+    try {
+      return await this.databases.getDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogCategories,
+        categoryId
+      );
+    } catch (error) {
+      console.error("Failed to get blog category:", error);
+      throw error;
+    }
+  }
+
+  async updateBlogCategory(categoryId, categoryData) {
+    try {
+      return await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogCategories,
+        categoryId,
+        categoryData
+      );
+    } catch (error) {
+      console.error("Failed to update blog category:", error);
+      throw error;
+    }
+  }
+
+  async deleteBlogCategory(categoryId) {
+    try {
+      return await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogCategories,
+        categoryId
+      );
+    } catch (error) {
+      console.error("Failed to delete blog category:", error);
+      throw error;
+    }
+  }
+
+  // ==================== BLOG POSTS MANAGEMENT ====================
+
+  async createBlogPost(postData) {
+    try {
+      return await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        ID.unique(),
+        {
+          title: postData.title,
+          slug: postData.slug || postData.title.toLowerCase().replace(/\s+/g, '-'),
+          excerpt: postData.excerpt,
+          content: postData.content,
+          featuredImage: postData.featuredImage,
+          categoryId: postData.categoryId,
+          tags: postData.tags || [],
+          status: postData.status || 'draft',
+          featured: postData.featured || false,
+          readTime: postData.readTime || 5,
+          views: postData.views || 0,
+          publishedAt: postData.status === 'published' ? new Date().toISOString() : null,
+          order: postData.order || 0
+        }
+      );
+    } catch (error) {
+      console.error("Failed to create blog post:", error);
+      throw error;
+    }
+  }
+
+  async getBlogPosts(categoryId = null, status = 'published') {
+    try {
+      const queries = [Query.orderDesc("publishedAt")];
+
+      if (categoryId) {
+        queries.push(Query.equal("categoryId", categoryId));
+      }
+
+      if (status) {
+        queries.push(Query.equal("status", status));
+      }
+
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        queries
+      );
+    } catch (error) {
+      console.error("Failed to get blog posts:", error);
+      throw error;
+    }
+  }
+
+  async getBlogPost(postId) {
+    try {
+      return await this.databases.getDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        postId
+      );
+    } catch (error) {
+      console.error("Failed to get blog post:", error);
+      throw error;
+    }
+  }
+
+  async getBlogPostBySlug(slug) {
+    try {
+      const queries = [Query.equal("slug", slug)];
+      const response = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        queries
+      );
+      return response.documents[0] || null;
+    } catch (error) {
+      console.error("Failed to get blog post by slug:", error);
+      throw error;
+    }
+  }
+
+  async updateBlogPost(postId, postData) {
+    try {
+      // Update publishedAt if status changes to published
+      if (postData.status === 'published' && !postData.publishedAt) {
+        postData.publishedAt = new Date().toISOString();
+      }
+
+      return await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        postId,
+        postData
+      );
+    } catch (error) {
+      console.error("Failed to update blog post:", error);
+      throw error;
+    }
+  }
+
+  async deleteBlogPost(postId) {
+    try {
+      return await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogPosts,
+        postId
+      );
+    } catch (error) {
+      console.error("Failed to delete blog post:", error);
+      throw error;
+    }
+  }
+
+  async incrementBlogPostViews(postId) {
+    try {
+      const post = await this.getBlogPost(postId);
+      return await this.updateBlogPost(postId, {
+        views: (post.views || 0) + 1
+      });
+    } catch (error) {
+      console.error("Failed to increment blog post views:", error);
+      throw error;
+    }
+  }
 }
 
 export default new PortfolioService();

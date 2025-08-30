@@ -2,7 +2,7 @@
 
     import React, { useEffect, useState } from 'react'
     import { motion, AnimatePresence } from 'framer-motion'
-    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X } from 'lucide-react'
+    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X, Award, Calendar, CheckCircle } from 'lucide-react'
     import { animateScroll as scroll, Link as ScrollLink } from 'react-scroll'
     import {
         FaCss3Alt,
@@ -19,7 +19,7 @@
     import { SiFigma, SiMongodb, SiMysql, SiPostgresql, SiTailwindcss } from 'react-icons/si'
 
     // Import custom hooks for dynamic data
-    import { useProjects, useSkills, useExperience, useAbout, useContacts } from '../hooks/usePortfolio'
+    import { useProjects, useSkills, useExperience, useAbout, useContacts, useCertifications } from '../hooks/usePortfolio'
     import { useFileUpload } from '../hooks/useFileUpload'
     import portfolioService from '../services/portfolioService'
 
@@ -72,6 +72,7 @@
         const { projects, loading: projectsLoading } = useProjects() // Get all projects
         const { skills, loading: skillsLoading } = useSkills()
         const { experiences, loading: experiencesLoading } = useExperience()
+        const { certifications, loading: certificationsLoading } = useCertifications()
         const { about, loading: aboutLoading } = useAbout()
         const { createContact } = useContacts()
 
@@ -300,11 +301,11 @@
                                             <div className="w-full max-w-md h-96 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse"></div>
                                         ) : (
                                             <img
-                                                src={about?.profileImage ? portfolioService.getFileView(about.profileImage) : "../React_portfolio/public/images/imteaj.png"}
+                                                src={about?.profileImage ? portfolioService.getFileView(about.profileImage) : "/React_portfolio/images/imteaj.png"}
                                                 alt={about?.name || "Profile"}
                                                 className="w-full max-w-md rounded-full object-cover"
                                                 onError={(e) => {
-                                                    e.target.src = "../React_portfolio/public/images/imteaj.png";
+                                                    e.target.src = "/React_portfolio/images/imteaj.png";
                                                 }}
                                             />
                                         )}
@@ -571,6 +572,140 @@
                                         <div className="text-center py-12">
                                             <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                                             <p className="text-gray-600 dark:text-gray-300">No work experience available yet.</p>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </div>
+                    </motion.div>
+
+                    {/* Certifications Section */}
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={fadeInUp}
+                        className="py-20"
+                    >
+                        <div className="max-w-7xl mx-auto px-6">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Certifications & Achievements</h2>
+                            {certificationsLoading ? (
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {[...Array(6)].map((_, index) => (
+                                        <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-pulse">
+                                            <div className="flex items-center mb-4">
+                                                <div className="h-8 w-8 bg-gray-300 dark:bg-gray-700 rounded mr-4"></div>
+                                                <div>
+                                                    <div className="h-6 w-32 bg-gray-300 dark:bg-gray-700 rounded mb-2"></div>
+                                                    <div className="h-4 w-24 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                                                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <motion.div
+                                    variants={staggerContainer}
+                                    initial="hidden"
+                                    whileInView="visible"
+                                    viewport={{ once: true, amount: 0.2 }}
+                                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                                >
+                                    {certifications.length > 0 ? certifications.map((certification) => (
+                                        <motion.div key={certification.$id} variants={itemFadeIn} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="flex items-center">
+                                                    <Award className="h-8 w-8 text-blue-500 mr-3" />
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold dark:text-white">{certification.title}</h3>
+                                                        <p className="text-gray-600 dark:text-gray-300 text-sm">{certification.issuer}</p>
+                                                    </div>
+                                                </div>
+                                                {certification.featured && (
+                                                    <span className="px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs rounded-full">
+                                                        Featured
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {certification.certificateImage && (
+                                                <div className="mb-4">
+                                                    <img
+                                                        src={portfolioService.getFileView(certification.certificateImage)}
+                                                        alt={certification.title}
+                                                        className="w-full h-32 object-cover rounded border"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {certification.description && (
+                                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                                                    {certification.description}
+                                                </p>
+                                            )}
+
+                                            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                                <div className="flex items-center gap-1">
+                                                    <Calendar className="h-4 w-4" />
+                                                    <span>Issued: {new Date(certification.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</span>
+                                                </div>
+                                                {certification.expiryDate && (
+                                                    <div className="flex items-center gap-1">
+                                                        {new Date(certification.expiryDate) > new Date() ? (
+                                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                                        ) : (
+                                                            <X className="h-4 w-4 text-red-500" />
+                                                        )}
+                                                        <span>
+                                                            {new Date(certification.expiryDate) > new Date() ? 'Valid' : 'Expired'}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {certification.skills && certification.skills.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mb-4">
+                                                    {certification.skills.map((skill, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs rounded-full"
+                                                        >
+                                                            {skill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center justify-between">
+                                                {certification.verificationUrl && (
+                                                    <a
+                                                        href={certification.verificationUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-600 dark:text-blue-400 hover:underline flex items-center text-sm"
+                                                    >
+                                                        <ExternalLink className="h-4 w-4 mr-1" />
+                                                        Verify
+                                                    </a>
+                                                )}
+                                                {certification.credentialId && (
+                                                    <span className="text-gray-500 dark:text-gray-400 text-xs">
+                                                        ID: {certification.credentialId}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )) : (
+                                        <div className="col-span-full text-center py-12">
+                                            <Award className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                                            <p className="text-gray-600 dark:text-gray-300">No certifications available yet.</p>
                                         </div>
                                     )}
                                 </motion.div>

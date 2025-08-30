@@ -13,6 +13,7 @@ import {
   Upload
 } from 'lucide-react';
 import { useExperience } from '../../hooks/usePortfolio';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import { useImageUpload } from '../../hooks/useFileUpload';
 
 const ExperienceManager = () => {
@@ -35,6 +36,8 @@ const ExperienceManager = () => {
   const [techInput, setTechInput] = useState('');
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, experience: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { 
     preview, 
@@ -176,13 +179,25 @@ const ExperienceManager = () => {
     }
   };
 
-  const handleDelete = async (experienceId) => {
-    if (window.confirm('Are you sure you want to delete this experience?')) {
-      try {
-        await deleteExperience(experienceId);
-      } catch (err) {
-        setError(err.message || 'Failed to delete experience');
-      }
+  const openDeleteModal = (experience) => {
+    setDeleteModal({ isOpen: true, experience });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, experience: null });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.experience) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteExperience(deleteModal.experience.$id);
+      closeDeleteModal();
+    } catch (err) {
+      setError(err.message || 'Failed to delete experience');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -318,7 +333,7 @@ const ExperienceManager = () => {
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(experience.$id)}
+                  onClick={() => openDeleteModal(experience)}
                   className="p-2 text-gray-400 hover:text-red-600 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -665,6 +680,17 @@ const ExperienceManager = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Experience"
+        message="Are you sure you want to delete this work experience? This will permanently remove it from your portfolio."
+        itemName={deleteModal.experience ? `${deleteModal.experience.position} at ${deleteModal.experience.company}` : ''}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };

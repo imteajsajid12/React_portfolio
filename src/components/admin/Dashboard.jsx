@@ -14,7 +14,11 @@ import {
   Bell,
   Search,
   Eye,
-  ExternalLink
+  ExternalLink,
+  Award,
+  MessageSquare,
+  BookOpen,
+  Tag
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.jsx';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
@@ -81,6 +85,24 @@ const Dashboard = () => {
       icon: Briefcase,
       path: '/admin/experience',
       description: 'Manage work experience'
+    },
+    {
+      name: 'Certifications',
+      icon: Award,
+      path: '/admin/certifications',
+      description: 'Manage certificates & achievements'
+    },
+    {
+      name: 'Blog Categories',
+      icon: Tag,
+      path: '/admin/blog-categories',
+      description: 'Organize blog content'
+    },
+    {
+      name: 'Blog Posts',
+      icon: BookOpen,
+      path: '/admin/blog-posts',
+      description: 'Create & manage blog posts'
     },
     {
       name: 'About',

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Save, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Save,
   X,
   Code2,
   Server,
   Database,
   Cloud,
   Palette,
-  Github
+  Github,
+  Network
 } from 'lucide-react';
 import { useSkills } from '../../hooks/usePortfolio';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 
 const SkillsManager = () => {
   const { skills, loading, createSkill, updateSkill, deleteSkill } = useSkills();
@@ -30,6 +32,8 @@ const SkillsManager = () => {
   });
   const [formLoading, setFormLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, skill: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const categories = [
     { value: 'frontend', label: 'Frontend', icon: Code2, color: 'text-blue-600' },
@@ -37,6 +41,7 @@ const SkillsManager = () => {
     { value: 'database', label: 'Database', icon: Database, color: 'text-orange-600' },
     { value: 'devops', label: 'DevOps', icon: Cloud, color: 'text-blue-500' },
     { value: 'design', label: 'Design', icon: Palette, color: 'text-purple-600' },
+    { value: 'networking', label: 'Networking', icon: Network, color: 'text-indigo-600' },
     { value: 'version-control', label: 'Version Control', icon: Github, color: 'text-gray-600' }
   ];
 
@@ -101,13 +106,25 @@ const SkillsManager = () => {
     }
   };
 
-  const handleDelete = async (skillId) => {
-    if (window.confirm('Are you sure you want to delete this skill?')) {
-      try {
-        await deleteSkill(skillId);
-      } catch (err) {
-        setError(err.message || 'Failed to delete skill');
-      }
+  const openDeleteModal = (skill) => {
+    setDeleteModal({ isOpen: true, skill });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, skill: null });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal.skill) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteSkill(deleteModal.skill.$id);
+      closeDeleteModal();
+    } catch (err) {
+      setError(err.message || 'Failed to delete skill');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -205,7 +222,7 @@ const SkillsManager = () => {
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => handleDelete(skill.$id)}
+                            onClick={() => openDeleteModal(skill)}
                             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -475,6 +492,17 @@ const SkillsManager = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Skill"
+        message="Are you sure you want to delete this skill? This will permanently remove it from your portfolio."
+        itemName={deleteModal.skill?.name}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };
