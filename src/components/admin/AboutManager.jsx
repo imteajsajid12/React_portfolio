@@ -314,20 +314,49 @@ const AboutManager = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Profile Image
               </label>
-              <div className="space-y-2">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'profileImage')}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
+              <div className="space-y-4">
+                {/* Current Image Preview */}
                 {formData.profileImage && (
-                  <div className="mt-2">
+                  <div className="flex items-center space-x-4">
                     <img
                       src={portfolioService.getFileView(formData.profileImage)}
                       alt="Profile"
-                      className="w-20 h-20 object-cover rounded-lg"
+                      className="w-24 h-24 object-cover rounded-full border-4 border-blue-200 dark:border-blue-800"
                     />
+                    <div>
+                      <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                        ✓ Profile image uploaded
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        This image will appear in your portfolio
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Area */}
+                <div className="flex items-center justify-center w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <ImageIcon className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span> profile image
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG (MAX. 5MB)</p>
+                    </div>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'profileImage')}
+                    />
+                  </label>
+                </div>
+
+                {uploading && (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <span className="text-sm text-blue-600 dark:text-blue-400">Uploading image...</span>
                   </div>
                 )}
               </div>
@@ -338,17 +367,40 @@ const AboutManager = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Resume (PDF)
               </label>
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'resume')}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-              {formData.resume && (
-                <p className="text-sm text-green-600 dark:text-green-400 mt-2">
-                  Resume uploaded successfully
-                </p>
-              )}
+              <div className="space-y-4">
+                {/* Current Resume Status */}
+                {formData.resume && (
+                  <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <div>
+                      <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                        ✓ Resume uploaded successfully
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Visitors can download your resume from the portfolio
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Area */}
+                <div className="flex items-center justify-center w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
+                    <div className="flex flex-col items-center justify-center pt-3 pb-3">
+                      <FileText className="w-6 h-6 mb-2 text-gray-500 dark:text-gray-400" />
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span> resume (PDF)
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf"
+                      onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'resume')}
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>

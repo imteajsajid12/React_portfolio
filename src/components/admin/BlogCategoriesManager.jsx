@@ -1,16 +1,46 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Save, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Save,
   X,
   Tag,
   Hash,
   Palette,
   Eye,
-  EyeOff
+  EyeOff,
+  BookOpen,
+  Code,
+  Lightbulb,
+  Heart,
+  Star,
+  Zap,
+  Coffee,
+  Rocket,
+  Globe,
+  Camera,
+  Music,
+  Gamepad2,
+  Briefcase,
+  GraduationCap,
+  Users,
+  Settings,
+  Smartphone,
+  Monitor,
+  Database,
+  Cloud,
+  Shield,
+  Target,
+  TrendingUp,
+  Award,
+  MessageCircle,
+  FileText,
+  Layers,
+  Grid,
+  Cpu,
+  Wifi
 } from 'lucide-react';
 import { useBlogCategories } from '../../hooks/usePortfolio';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
@@ -34,9 +64,52 @@ const BlogCategoriesManager = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const iconOptions = [
+    // General
     { value: 'Tag', label: 'Tag', icon: Tag },
     { value: 'Hash', label: 'Hash', icon: Hash },
-    { value: 'Palette', label: 'Palette', icon: Palette }
+    { value: 'BookOpen', label: 'Book', icon: BookOpen },
+    { value: 'FileText', label: 'Document', icon: FileText },
+    { value: 'Star', label: 'Star', icon: Star },
+    { value: 'Heart', label: 'Heart', icon: Heart },
+
+    // Technology
+    { value: 'Code', label: 'Code', icon: Code },
+    { value: 'Monitor', label: 'Monitor', icon: Monitor },
+    { value: 'Smartphone', label: 'Mobile', icon: Smartphone },
+    { value: 'Database', label: 'Database', icon: Database },
+    { value: 'Cloud', label: 'Cloud', icon: Cloud },
+    { value: 'Cpu', label: 'CPU', icon: Cpu },
+    { value: 'Wifi', label: 'Network', icon: Wifi },
+    { value: 'Shield', label: 'Security', icon: Shield },
+
+    // Creative
+    { value: 'Palette', label: 'Design', icon: Palette },
+    { value: 'Camera', label: 'Photography', icon: Camera },
+    { value: 'Music', label: 'Music', icon: Music },
+    { value: 'Layers', label: 'Layers', icon: Layers },
+    { value: 'Grid', label: 'Grid', icon: Grid },
+
+    // Business
+    { value: 'Briefcase', label: 'Business', icon: Briefcase },
+    { value: 'TrendingUp', label: 'Growth', icon: TrendingUp },
+    { value: 'Target', label: 'Goals', icon: Target },
+    { value: 'Award', label: 'Achievement', icon: Award },
+    { value: 'Users', label: 'Team', icon: Users },
+
+    // Learning
+    { value: 'GraduationCap', label: 'Education', icon: GraduationCap },
+    { value: 'Lightbulb', label: 'Ideas', icon: Lightbulb },
+    { value: 'Rocket', label: 'Innovation', icon: Rocket },
+
+    // Lifestyle
+    { value: 'Coffee', label: 'Lifestyle', icon: Coffee },
+    { value: 'Globe', label: 'Travel', icon: Globe },
+    { value: 'Gamepad2', label: 'Gaming', icon: Gamepad2 },
+    { value: 'MessageCircle', label: 'Discussion', icon: MessageCircle },
+
+    // Action
+    { value: 'Zap', label: 'Energy', icon: Zap },
+    { value: 'Settings', label: 'Tools', icon: Settings }
   ];
 
   const colorOptions = [

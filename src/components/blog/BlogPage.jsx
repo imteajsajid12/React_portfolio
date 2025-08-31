@@ -29,11 +29,14 @@ import {
 } from 'lucide-react';
 import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
 import portfolioService from '../../services/portfolioService';
+import BlogContent from './BlogContent';
 
 const BlogPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   
@@ -88,6 +91,22 @@ const BlogPage = () => {
   const getCategoryColor = (categoryId) => {
     const category = categories.find(cat => cat.$id === categoryId);
     return category?.color || '#3B82F6';
+  };
+
+  const openPost = async (post) => {
+    setSelectedPost(post);
+    setIsPostModalOpen(true);
+    // Increment view count
+    try {
+      await portfolioService.incrementBlogPostViews(post.$id);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+    }
+  };
+
+  const closePost = () => {
+    setSelectedPost(null);
+    setIsPostModalOpen(false);
   };
 
   const getCategoryIcon = (categoryName) => {
