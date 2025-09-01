@@ -172,10 +172,22 @@ const BlogCategoriesManager = () => {
     setError('');
 
     try {
+      // Create a copy of formData without problematic fields if they don't exist in the collection
+      const submitData = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        color: formData.color,
+        icon: formData.icon,
+        status: formData.status
+        // Temporarily remove order field until collection is properly set up
+        // order: formData.order
+      };
+
       if (editingCategory) {
-        await updateCategory(editingCategory.$id, formData);
+        await updateCategory(editingCategory.$id, submitData);
       } else {
-        await createCategory(formData);
+        await createCategory(submitData);
       }
       closeModal();
     } catch (err) {

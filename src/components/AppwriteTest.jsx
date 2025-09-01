@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Client, Account, Databases } from 'appwrite';
 import conf from '../conf/conf.js';
 import { setupDatabase, checkDatabaseStatus } from '../utils/setupDatabase.js';
+import { repairBlogCollections } from '../utils/repairDatabase.js';
 
 const AppwriteTest = () => {
   const [connectionStatus, setConnectionStatus] = useState('Testing...');
   const [projectInfo, setProjectInfo] = useState(null);
   const [error, setError] = useState(null);
+  const [repairStatus, setRepairStatus] = useState('');
+  const [isRepairing, setIsRepairing] = useState(false);
 
   useEffect(() => {
     testAppwriteConnection();
@@ -164,6 +167,29 @@ const AppwriteTest = () => {
     }
   };
 
+  const repairBlogDatabase = async () => {
+    try {
+      setIsRepairing(true);
+      setRepairStatus('Repairing blog collections...');
+
+      const result = await repairBlogCollections();
+
+      if (result.success) {
+        setRepairStatus('Blog collections repaired successfully!');
+        alert('Blog collections repaired successfully! You can now create blog categories and posts.');
+      } else {
+        setRepairStatus('Blog repair failed!');
+        alert(`Blog repair failed: ${result.message}`);
+      }
+    } catch (err) {
+      console.error('Blog repair failed:', err);
+      setRepairStatus('Blog repair failed!');
+      alert(`Blog repair failed: ${err.message}`);
+    } finally {
+      setIsRepairing(false);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Appwrite Connection Test</h1>
@@ -176,6 +202,11 @@ const AppwriteTest = () => {
         </p>
         {error && (
           <p className="text-red-600 mt-2">Error: {error}</p>
+        )}
+        {repairStatus && (
+          <p className={`mt-2 font-medium ${repairStatus.includes('success') ? 'text-green-600' : repairStatus.includes('failed') ? 'text-red-600' : 'text-blue-600'}`}>
+            {repairStatus}
+          </p>
         )}
       </div>
 
@@ -231,6 +262,14 @@ const AppwriteTest = () => {
             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
             Setup Database Collections
+          </button>
+
+          <button
+            onClick={repairBlogDatabase}
+            disabled={isRepairing}
+            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-orange-400 disabled:cursor-not-allowed"
+          >
+            {isRepairing ? 'Repairing...' : 'Repair Blog Collections'}
           </button>
 
           <button

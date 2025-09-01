@@ -530,8 +530,8 @@ export class PortfolioService {
           description: categoryData.description,
           color: categoryData.color || '#3B82F6',
           icon: categoryData.icon,
-          status: categoryData.status || 'active',
-          order: categoryData.order || 0
+          status: categoryData.status || 'active'
+          // Removed order field until collection is properly set up
         }
       );
     } catch (error) {
