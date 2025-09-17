@@ -1,0 +1,995 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import toast, { Toaster } from 'react-hot-toast';
+import { 
+  ArrowLeft, 
+  Calendar, 
+  Clock, 
+  Eye, 
+  Heart, 
+  Share2, 
+  Bookmark, 
+  Copy, 
+  Check,
+  User,
+  Tag,
+  ChevronUp,
+  MessageCircle,
+  ThumbsUp,
+  Github,
+  Twitter,
+  Linkedin,
+  Facebook,
+  Link,
+  Edit3,
+  Save,
+  X,
+  Code2,
+  Lightbulb,
+  Zap,
+  Target,
+  BookOpen,
+  Coffee,
+  Star,
+  TrendingUp,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Send,
+  Reply,
+  MoreHorizontal
+} from 'lucide-react';
+import portfolioService from '../../services/portfolioService';
+import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
+import CodeBlock from './CodeBlock';
+
+// Enhanced Blog Content Component with Advanced Code Highlighting
+const EnhancedBlogContent = ({ content, isDarkMode, onCopyCode, copiedCode }) => {
+  const [processedContent, setProcessedContent] = useState('');
+
+  useEffect(() => {
+    const processContent = () => {
+      if (!content) {
+        setProcessedContent('');
+        return;
+      }
+
+      let processed = content;
+
+      // Process markdown-style code blocks with enhanced styling
+      processed = processed.replace(
+        /```(\w+)?\n([\s\S]*?)```/g,
+        (match, language = 'text', code) => {
+          const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+          const cleanCode = code.trim();
+          const languageDisplay = language.toUpperCase();
+
+          return `
+            <div class="code-block-wrapper relative group my-8 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
+              <div class="flex items-center justify-between bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-700 px-6 py-3 border-b border-gray-200 dark:border-gray-600">
+                <div class="flex items-center gap-3">
+                  <div class="flex gap-1.5">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">${languageDisplay}</span>
+                  </div>
+                </div>
+                <button
+                  class="copy-btn flex items-center gap-2 px-3 py-1.5 text-xs bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 transition-all duration-200 opacity-0 group-hover:opacity-100 border border-gray-200 dark:border-gray-500 shadow-sm"
+                  data-code-id="${codeId}"
+                  data-code-text="${encodeURIComponent(cleanCode)}"
+                >
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path>
+                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path>
+                  </svg>
+                  <span class="font-medium">Copy</span>
+                </button>
+              </div>
+              <div class="syntax-highlighter-container bg-gray-950 dark:bg-gray-900 relative">
+                <pre class="text-gray-100 p-6 overflow-x-auto text-sm leading-relaxed font-mono"><code class="language-${language}">${cleanCode}</code></pre>
+                <div class="absolute top-4 right-4 opacity-20">
+                  <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      );
+
+      // Process inline code with better styling
+      processed = processed.replace(
+        /`([^`]+)`/g,
+        '<code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-md text-sm font-mono border border-gray-200 dark:border-gray-700">$1</code>'
+      );
+
+      // Process headings with anchor links and better styling
+      processed = processed.replace(
+        /^(#{1,6})\s+(.+)$/gm,
+        (match, hashes, text) => {
+          const level = hashes.length;
+          const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+          const sizeClasses = {
+            1: 'text-4xl font-bold mt-12 mb-6',
+            2: 'text-3xl font-bold mt-10 mb-5',
+            3: 'text-2xl font-semibold mt-8 mb-4',
+            4: 'text-xl font-semibold mt-6 mb-3',
+            5: 'text-lg font-semibold mt-4 mb-2',
+            6: 'text-base font-semibold mt-3 mb-2'
+          };
+
+          return `<h${level} id="${id}" class="group relative ${sizeClasses[level]} text-gray-900 dark:text-white">
+            <a href="#${id}" class="absolute -left-8 top-0 opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+              </svg>
+            </a>
+            ${text}
+          </h${level}>`;
+        }
+      );
+
+      // Process blockquotes with better styling
+      processed = processed.replace(
+        /^>\s+(.+)$/gm,
+        '<blockquote class="border-l-4 border-blue-500 pl-6 py-2 my-6 bg-blue-50 dark:bg-blue-900/20 text-gray-700 dark:text-gray-300 italic rounded-r-lg">$1</blockquote>'
+      );
+
+      // Process lists with better styling
+      processed = processed.replace(
+        /^\*\s+(.+)$/gm,
+        '<li class="mb-2 text-gray-700 dark:text-gray-300">$1</li>'
+      );
+
+      // Process bold and italic text
+      processed = processed.replace(
+        /\*\*(.+?)\*\*/g,
+        '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>'
+      );
+
+      processed = processed.replace(
+        /\*(.+?)\*/g,
+        '<em class="italic text-gray-700 dark:text-gray-300">$1</em>'
+      );
+
+      // Process links with better styling
+      processed = processed.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '<a href="$2" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+
+      setProcessedContent(processed);
+    };
+
+    processContent();
+  }, [content]);
+
+  useEffect(() => {
+    // Add click handlers for copy buttons
+    const handleCopyClick = (e) => {
+      if (e.target.closest('.copy-btn')) {
+        const btn = e.target.closest('.copy-btn');
+        const codeId = btn.getAttribute('data-code-id');
+        const codeText = decodeURIComponent(btn.getAttribute('data-code-text'));
+        onCopyCode(codeText, codeId);
+      }
+    };
+
+    document.addEventListener('click', handleCopyClick);
+    return () => document.removeEventListener('click', handleCopyClick);
+  }, [onCopyCode]);
+
+  return (
+    <div
+      className="blog-content prose prose-lg max-w-none dark:prose-invert"
+      dangerouslySetInnerHTML={{ __html: processedContent }}
+    />
+  );
+};
+
+const EnhancedBlogDetailPage = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState('');
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [relatedPosts, setRelatedPosts] = useState([]);
+  const [nextPost, setNextPost] = useState(null);
+  const [prevPost, setPrevPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState({
+    authorName: '',
+    authorEmail: '',
+    authorWebsite: '',
+    content: ''
+  });
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [sessionId, setSessionId] = useState('');
+  
+  const contentRef = useRef(null);
+  const { categories } = useBlogCategories();
+  const { posts } = useBlogPosts();
+
+  // Initialize session
+  useEffect(() => {
+    const session = portfolioService.getSessionId();
+    setSessionId(session);
+  }, []);
+
+  // Fetch blog post by slug
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const fetchedPost = await portfolioService.getBlogPostBySlug(slug);
+        if (fetchedPost) {
+          setPost(fetchedPost);
+          setEditContent(fetchedPost.content || '');
+          setLikes(fetchedPost.likes || 0);
+          
+          // Check if user has liked/bookmarked this post
+          const [liked, bookmarked] = await Promise.all([
+            portfolioService.checkBlogPostLike(fetchedPost.$id, sessionId),
+            portfolioService.checkBlogPostBookmark(fetchedPost.$id, sessionId)
+          ]);
+          
+          setIsLiked(liked);
+          setIsBookmarked(bookmarked);
+          
+          // Increment view count
+          await portfolioService.incrementBlogPostViews(fetchedPost.$id);
+          
+          // Fetch comments
+          const commentsResponse = await portfolioService.getBlogComments(fetchedPost.$id);
+          setComments(commentsResponse.documents || []);
+        } else {
+          setError('Blog post not found');
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching blog post:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug && sessionId) {
+      fetchPost();
+    }
+  }, [slug, sessionId]);
+
+  // Find related posts and navigation
+  useEffect(() => {
+    if (post && posts) {
+      // Find related posts (same category, excluding current post)
+      const related = posts
+        .filter(p => p.$id !== post.$id && p.categoryId === post.categoryId)
+        .slice(0, 3);
+      setRelatedPosts(related);
+
+      // Find next and previous posts
+      const currentIndex = posts.findIndex(p => p.$id === post.$id);
+      if (currentIndex > 0) {
+        setNextPost(posts[currentIndex - 1]);
+      }
+      if (currentIndex < posts.length - 1) {
+        setPrevPost(posts[currentIndex + 1]);
+      }
+    }
+  }, [post, posts]);
+
+  // Reading progress tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      if (contentRef.current) {
+        const element = contentRef.current;
+        const totalHeight = element.scrollHeight - element.clientHeight;
+        const progress = (element.scrollTop / totalHeight) * 100;
+        setReadingProgress(Math.min(100, Math.max(0, progress)));
+        setShowScrollTop(element.scrollTop > 300);
+      }
+    };
+
+    const contentElement = contentRef.current;
+    if (contentElement) {
+      contentElement.addEventListener('scroll', handleScroll);
+      return () => contentElement.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Dark mode detection
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    };
+    
+    checkDarkMode();
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.$id === categoryId);
+    return category?.name || 'Uncategorized';
+  };
+
+  const getCategoryColor = (categoryId) => {
+    const category = categories.find(cat => cat.$id === categoryId);
+    return category?.color || '#3B82F6';
+  };
+
+  const copyToClipboard = async (text, codeId) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedCode(codeId);
+      toast.success('Code copied to clipboard!', {
+        duration: 2000,
+        position: 'bottom-right',
+      });
+      setTimeout(() => setCopiedCode(null), 2000);
+    } catch (err) {
+      toast.error('Failed to copy code');
+    }
+  };
+
+  const handleShare = async (platform) => {
+    const url = window.location.href;
+    const title = post?.title || '';
+    const text = post?.excerpt || '';
+
+    const shareUrls = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+      copy: url
+    };
+
+    if (platform === 'copy') {
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard!');
+      } catch (err) {
+        toast.error('Failed to copy link');
+      }
+    } else {
+      window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+    }
+  };
+
+  const toggleBookmark = async () => {
+    try {
+      const result = await portfolioService.toggleBlogPostBookmark(post.$id, sessionId);
+      setIsBookmarked(result.bookmarked);
+      toast.success(result.bookmarked ? 'Added to bookmarks' : 'Removed from bookmarks');
+    } catch (err) {
+      toast.error('Failed to update bookmark');
+    }
+  };
+
+  const toggleLike = async () => {
+    try {
+      const result = await portfolioService.toggleBlogPostLike(post.$id, sessionId);
+      setIsLiked(result.liked);
+      setLikes(result.likes);
+      toast.success(result.liked ? 'Post liked!' : 'Like removed');
+    } catch (err) {
+      toast.error('Failed to update like');
+    }
+  };
+
+  const scrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await portfolioService.updateBlogPost(post.$id, { content: editContent });
+      setPost(prev => ({ ...prev, content: editContent }));
+      setIsEditing(false);
+      toast.success('Post updated successfully!');
+    } catch (err) {
+      toast.error('Failed to update post');
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.authorName || !newComment.authorEmail || !newComment.content) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const commentData = {
+        ...newComment,
+        postId: post.$id,
+        parentId: replyingTo,
+        isReply: !!replyingTo
+      };
+
+      const comment = await portfolioService.createBlogComment(commentData);
+      setComments(prev => [comment, ...prev]);
+      setNewComment({ authorName: '', authorEmail: '', authorWebsite: '', content: '' });
+      setReplyingTo(null);
+      toast.success('Comment posted successfully!');
+    } catch (err) {
+      toast.error('Failed to post comment');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading article...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">📝</div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {error || 'Article not found'}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            The article you're looking for doesn't exist or has been moved.
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/blog')}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Back to Blog
+          </motion.button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20">
+      <Toaster />
+
+      {/* Reading Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-50">
+        <motion.div
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+          style={{ width: `${readingProgress}%` }}
+          initial={{ width: 0 }}
+          animate={{ width: `${readingProgress}%` }}
+          transition={{ duration: 0.1 }}
+        />
+      </div>
+
+      {/* Floating Action Buttons */}
+      <div className="fixed right-6 bottom-6 flex flex-col gap-3 z-40">
+        <AnimatePresence>
+          {showScrollTop && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              onClick={scrollToTop}
+              className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700"
+            >
+              <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleBookmark}
+          className={`p-3 rounded-full shadow-lg hover:shadow-xl transition-all ${
+            isBookmarked
+              ? 'bg-blue-500 text-white'
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+          }`}
+        >
+          <Bookmark className="w-5 h-5" />
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleLike}
+          className={`p-3 rounded-full shadow-lg hover:shadow-xl transition-all ${
+            isLiked
+              ? 'bg-red-500 text-white'
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+          }`}
+        >
+          <Heart className="w-5 h-5" />
+        </motion.button>
+      </div>
+
+      {/* Main Content */}
+      <div ref={contentRef} className="overflow-y-auto h-screen">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 z-30"
+        >
+          <div className="max-w-4xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <motion.button
+                whileHover={{ x: -2 }}
+                onClick={() => navigate('/blog')}
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="font-medium">Back to Blog</span>
+              </motion.button>
+
+              <div className="flex items-center gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  <Edit3 className="w-5 h-5" />
+                </motion.button>
+
+                <div className="relative group">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </motion.button>
+
+                  <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="p-2 space-y-1 min-w-[160px]">
+                      <button
+                        onClick={() => handleShare('twitter')}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      >
+                        <Twitter className="w-4 h-4" />
+                        Twitter
+                      </button>
+                      <button
+                        onClick={() => handleShare('linkedin')}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      >
+                        <Linkedin className="w-4 h-4" />
+                        LinkedIn
+                      </button>
+                      <button
+                        onClick={() => handleShare('facebook')}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      >
+                        <Facebook className="w-4 h-4" />
+                        Facebook
+                      </button>
+                      <button
+                        onClick={() => handleShare('copy')}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                      >
+                        <Link className="w-4 h-4" />
+                        Copy Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.header>
+
+        {/* Article Content */}
+        <main className="max-w-4xl mx-auto px-6 py-12">
+          <motion.article
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {/* Article Header */}
+            <header className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <span
+                  className="px-4 py-2 text-sm font-medium text-white rounded-full"
+                  style={{ backgroundColor: getCategoryColor(post.categoryId) }}
+                >
+                  {getCategoryName(post.categoryId)}
+                </span>
+                {post.featured && (
+                  <span className="px-3 py-1 bg-yellow-500 text-white text-sm font-medium rounded-full flex items-center gap-1">
+                    <Star className="w-3 h-3" />
+                    Featured
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                {post.title}
+              </h1>
+
+              {post.excerpt && (
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                  {post.excerpt}
+                </p>
+              )}
+
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-8">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(post.publishedAt || post.$createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{post.readTime} min read</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  <span>{post.views || 0} views</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  <span>{likes} likes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  <span>{comments.length} comments</span>
+                </div>
+              </div>
+
+              {post.featuredImage && (
+                <div className="relative rounded-2xl overflow-hidden mb-8">
+                  <img
+                    src={portfolioService.getFileView(post.featuredImage)}
+                    alt={post.title}
+                    className="w-full h-64 md:h-96 object-cover"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              )}
+            </header>
+
+            {/* Content Section */}
+            <div className="prose prose-lg max-w-none dark:prose-invert">
+              {isEditing ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Content</h3>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleSaveEdit}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsEditing(false)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        Cancel
+                      </motion.button>
+                    </div>
+                  </div>
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full h-96 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Write your blog content here..."
+                  />
+                </div>
+              ) : (
+                <EnhancedBlogContent
+                  content={post.content || post.excerpt || 'No content available.'}
+                  isDarkMode={isDarkMode}
+                  onCopyCode={copyToClipboard}
+                  copiedCode={copiedCode}
+                />
+              )}
+            </div>
+
+            {/* Tags Section */}
+            {post.tags && post.tags.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Tag className="w-5 h-5" />
+                  Tags
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Comments Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
+            >
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
+                <MessageCircle className="w-6 h-6" />
+                Comments ({comments.length})
+              </h3>
+
+              {/* Comment Form */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  {replyingTo ? 'Reply to Comment' : 'Leave a Comment'}
+                </h4>
+                <form onSubmit={handleCommentSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="Your Name *"
+                      value={newComment.authorName}
+                      onChange={(e) => setNewComment(prev => ({ ...prev, authorName: e.target.value }))}
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <input
+                      type="email"
+                      placeholder="Your Email *"
+                      value={newComment.authorEmail}
+                      onChange={(e) => setNewComment(prev => ({ ...prev, authorEmail: e.target.value }))}
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="Your Website (optional)"
+                    value={newComment.authorWebsite}
+                    onChange={(e) => setNewComment(prev => ({ ...prev, authorWebsite: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <textarea
+                    placeholder="Your comment *"
+                    value={newComment.content}
+                    onChange={(e) => setNewComment(prev => ({ ...prev, content: e.target.value }))}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    required
+                  />
+                  <div className="flex items-center justify-between">
+                    {replyingTo && (
+                      <button
+                        type="button"
+                        onClick={() => setReplyingTo(null)}
+                        className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                      >
+                        Cancel Reply
+                      </button>
+                    )}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      type="submit"
+                      className="ml-auto flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      <Send className="w-4 h-4" />
+                      Post Comment
+                    </motion.button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Comments List */}
+              <div className="space-y-6">
+                {comments.map((comment) => (
+                  <motion.div
+                    key={comment.$id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          {comment.authorName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-900 dark:text-white">
+                            {comment.authorWebsite ? (
+                              <a
+                                href={comment.authorWebsite}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              >
+                                {comment.authorName}
+                              </a>
+                            ) : (
+                              comment.authorName
+                            )}
+                          </h5>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {formatDate(comment.$createdAt)}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setReplyingTo(comment.$id)}
+                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      >
+                        <Reply className="w-4 h-4" />
+                        Reply
+                      </button>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {comment.content}
+                    </p>
+                  </motion.div>
+                ))}
+
+                {comments.length === 0 && (
+                  <div className="text-center py-12">
+                    <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No comments yet. Be the first to share your thoughts!
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.section>
+
+            {/* Related Posts */}
+            {relatedPosts.length > 0 && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
+              >
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
+                  <BookOpen className="w-6 h-6" />
+                  Related Articles
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedPosts.map((relatedPost) => (
+                    <motion.article
+                      key={relatedPost.$id}
+                      whileHover={{ y: -5 }}
+                      onClick={() => navigate(`/blog/${relatedPost.slug || relatedPost.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`)}
+                      className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    >
+                      {relatedPost.featuredImage && (
+                        <div className="h-48 overflow-hidden">
+                          <img
+                            src={portfolioService.getFileView(relatedPost.featuredImage)}
+                            alt={relatedPost.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            onError={(e) => e.target.style.display = 'none'}
+                          />
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                          {relatedPost.title}
+                        </h4>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-3 mb-4">
+                          {relatedPost.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <span>{formatDate(relatedPost.publishedAt || relatedPost.$createdAt)}</span>
+                          <span>{relatedPost.readTime} min read</span>
+                        </div>
+                      </div>
+                    </motion.article>
+                  ))}
+                </div>
+              </motion.section>
+            )}
+
+            {/* Navigation */}
+            {(nextPost || prevPost) && (
+              <motion.nav
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex justify-between items-center">
+                  {prevPost ? (
+                    <motion.button
+                      whileHover={{ x: -5 }}
+                      onClick={() => navigate(`/blog/${prevPost.slug || prevPost.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`)}
+                      className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all max-w-sm"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-400" />
+                      <div className="text-left">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Previous</p>
+                        <p className="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                          {prevPost.title}
+                        </p>
+                      </div>
+                    </motion.button>
+                  ) : (
+                    <div></div>
+                  )}
+
+                  {nextPost ? (
+                    <motion.button
+                      whileHover={{ x: 5 }}
+                      onClick={() => navigate(`/blog/${nextPost.slug || nextPost.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`)}
+                      className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all max-w-sm"
+                    >
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Next</p>
+                        <p className="font-semibold text-gray-900 dark:text-white line-clamp-1">
+                          {nextPost.title}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </motion.button>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              </motion.nav>
+            )}
+          </motion.article>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default EnhancedBlogDetailPage;

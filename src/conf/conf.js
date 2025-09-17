@@ -14,6 +14,9 @@ const config = {
     appwriteCollectionCertifications: String(import.meta.env.VITE_APPWRITE_COLLECTION_CERTIFICATIONS || 'portfolio_certifications'),
     appwriteCollectionBlogCategories: String(import.meta.env.VITE_APPWRITE_COLLECTION_BLOG_CATEGORIES || 'portfolio_blog_categories'),
     appwriteCollectionBlogPosts: String(import.meta.env.VITE_APPWRITE_COLLECTION_BLOG_POSTS || 'portfolio_blog_posts'),
+    appwriteCollectionBlogComments: String(import.meta.env.VITE_APPWRITE_COLLECTION_BLOG_COMMENTS || 'portfolio_blog_comments'),
+    appwriteCollectionBlogLikes: String(import.meta.env.VITE_APPWRITE_COLLECTION_BLOG_LIKES || 'portfolio_blog_likes'),
+    appwriteCollectionBlogBookmarks: String(import.meta.env.VITE_APPWRITE_COLLECTION_BLOG_BOOKMARKS || 'portfolio_blog_bookmarks'),
 
     // Storage
     appwriteBucketId: String(import.meta.env.VITE_APPWRITE_STORAGE_BUCKET || ''),

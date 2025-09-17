@@ -6,6 +6,8 @@ import { AdminRoute } from './components/auth/ProtectedRoute';
 // Portfolio Components
 import Portfolio from './portfolio/Portfolio';
 import BlogPage from './components/blog/BlogPage';
+import BlogDetailPage from './components/blog/BlogDetailPage';
+import EnhancedBlogDetailPage from './components/blog/EnhancedBlogDetailPage';
 
 // Admin Components
 import Login from './components/auth/Login';
@@ -22,6 +24,7 @@ import ContactManager from './components/admin/ContactManager';
 
 // Test Component
 import AppwriteTest from './components/AppwriteTest';
+import AdminPage from './pages/AdminPage';
 
 // Placeholder components for admin routes (to be implemented)
 const SettingsManager = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings Manager</h1><p>Coming soon...</p></div>;
@@ -35,9 +38,11 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<Portfolio />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<EnhancedBlogDetailPage />} />
 
             {/* Test Route */}
             <Route path="/test" element={<AppwriteTest />} />
+            <Route path="/admin-setup" element={<AdminPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<Login />} />

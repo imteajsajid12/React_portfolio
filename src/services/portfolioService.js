@@ -142,11 +142,12 @@ export class PortfolioService {
 
   async getSkills(category = null) {
     try {
-      const queries = [Query.orderAsc("order")];
+      const queries = [Query.equal("status", "active")];
       if (category) {
         queries.push(Query.equal("category", category));
       }
-      queries.push(Query.equal("status", "active"));
+      // Order by creation date instead of order field until collection is properly set up
+      queries.push(Query.orderDesc("$createdAt"));
 
       return await this.databases.listDocuments(
         conf.appwriteDatabaseId,
@@ -520,38 +521,58 @@ export class PortfolioService {
 
   async createBlogCategory(categoryData) {
     try {
-      return await this.databases.createDocument(
+      const documentData = {
+        name: categoryData.name,
+        slug: categoryData.slug || categoryData.name.toLowerCase().replace(/\s+/g, '-'),
+        description: categoryData.description,
+        color: categoryData.color || '#3B82F6',
+        icon: categoryData.icon,
+        status: categoryData.status || 'active'
+        // Removed order field until collection is properly set up
+      };
+
+      console.log('Creating blog category with data:', documentData);
+      console.log('Collection ID:', conf.appwriteCollectionBlogCategories);
+
+      const result = await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionBlogCategories,
         ID.unique(),
-        {
-          name: categoryData.name,
-          slug: categoryData.slug || categoryData.name.toLowerCase().replace(/\s+/g, '-'),
-          description: categoryData.description,
-          color: categoryData.color || '#3B82F6',
-          icon: categoryData.icon,
-          status: categoryData.status || 'active'
-          // Removed order field until collection is properly set up
-        }
+        documentData
       );
+
+      console.log('Blog category created successfully:', result);
+      return result;
     } catch (error) {
       console.error("Failed to create blog category:", error);
+      console.error("Database ID:", conf.appwriteDatabaseId);
+      console.error("Collection ID:", conf.appwriteCollectionBlogCategories);
+      console.error("Category data:", categoryData);
       throw error;
     }
   }
 
   async getBlogCategories() {
     try {
-      const queries = [Query.orderAsc("order")];
-      queries.push(Query.equal("status", "active"));
+      const queries = [Query.equal("status", "active")];
+      // Order by creation date instead of order field until collection is properly set up
+      queries.push(Query.orderDesc("$createdAt"));
 
-      return await this.databases.listDocuments(
+      console.log('Fetching blog categories with queries:', queries);
+      console.log('Collection ID:', conf.appwriteCollectionBlogCategories);
+
+      const result = await this.databases.listDocuments(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionBlogCategories,
         queries
       );
+
+      console.log('Blog categories fetched successfully:', result.documents?.length || 0, 'items');
+      return result;
     } catch (error) {
       console.error("Failed to get blog categories:", error);
+      console.error("Database ID:", conf.appwriteDatabaseId);
+      console.error("Collection ID:", conf.appwriteCollectionBlogCategories);
       throw error;
     }
   }
@@ -600,28 +621,39 @@ export class PortfolioService {
 
   async createBlogPost(postData) {
     try {
-      return await this.databases.createDocument(
+      const documentData = {
+        title: postData.title,
+        slug: postData.slug || postData.title.toLowerCase().replace(/\s+/g, '-'),
+        excerpt: postData.excerpt,
+        // content: postData.content, // Temporarily removed until collection has content field
+        featuredImage: postData.featuredImage,
+        categoryId: postData.categoryId,
+        tags: postData.tags || [],
+        status: postData.status || 'draft',
+        featured: postData.featured || false,
+        readTime: postData.readTime || 5,
+        views: postData.views || 0,
+        publishedAt: postData.status === 'published' ? new Date().toISOString() : null,
+        order: postData.order || 0
+      };
+
+      console.log('Creating blog post with data:', documentData);
+      console.log('Collection ID:', conf.appwriteCollectionBlogPosts);
+
+      const result = await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionBlogPosts,
         ID.unique(),
-        {
-          title: postData.title,
-          slug: postData.slug || postData.title.toLowerCase().replace(/\s+/g, '-'),
-          excerpt: postData.excerpt,
-          content: postData.content,
-          featuredImage: postData.featuredImage,
-          categoryId: postData.categoryId,
-          tags: postData.tags || [],
-          status: postData.status || 'draft',
-          featured: postData.featured || false,
-          readTime: postData.readTime || 5,
-          views: postData.views || 0,
-          publishedAt: postData.status === 'published' ? new Date().toISOString() : null,
-          order: postData.order || 0
-        }
+        documentData
       );
+
+      console.log('Blog post created successfully:', result);
+      return result;
     } catch (error) {
       console.error("Failed to create blog post:", error);
+      console.error("Database ID:", conf.appwriteDatabaseId);
+      console.error("Collection ID:", conf.appwriteCollectionBlogPosts);
+      console.error("Post data:", postData);
       throw error;
     }
   }
@@ -719,6 +751,251 @@ export class PortfolioService {
       console.error("Failed to increment blog post views:", error);
       throw error;
     }
+  }
+
+  // ==================== BLOG ENGAGEMENT ====================
+
+  // Blog Likes
+  async toggleBlogPostLike(postId, sessionId, userId = null) {
+    try {
+      // Check if already liked
+      const queries = [
+        Query.equal("postId", postId),
+        Query.equal("sessionId", sessionId)
+      ];
+
+      const existingLikes = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogLikes,
+        queries
+      );
+
+      if (existingLikes.documents.length > 0) {
+        // Unlike - remove the like
+        await this.databases.deleteDocument(
+          conf.appwriteDatabaseId,
+          conf.appwriteCollectionBlogLikes,
+          existingLikes.documents[0].$id
+        );
+
+        // Decrement post likes count
+        const post = await this.getBlogPost(postId);
+        const currentLikes = Math.max(0, (post.likes || 0) - 1);
+        await this.updateBlogPost(postId, { likes: currentLikes });
+
+        return { liked: false, likes: currentLikes };
+      } else {
+        // Like - add the like
+        await this.databases.createDocument(
+          conf.appwriteDatabaseId,
+          conf.appwriteCollectionBlogLikes,
+          ID.unique(),
+          {
+            postId,
+            sessionId,
+            userId,
+            type: 'like'
+          }
+        );
+
+        // Increment post likes count
+        const post = await this.getBlogPost(postId);
+        const currentLikes = (post.likes || 0) + 1;
+        await this.updateBlogPost(postId, { likes: currentLikes });
+
+        return { liked: true, likes: currentLikes };
+      }
+    } catch (error) {
+      console.error("Failed to toggle blog post like:", error);
+      throw error;
+    }
+  }
+
+  async checkBlogPostLike(postId, sessionId) {
+    try {
+      const queries = [
+        Query.equal("postId", postId),
+        Query.equal("sessionId", sessionId)
+      ];
+
+      const likes = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogLikes,
+        queries
+      );
+
+      return likes.documents.length > 0;
+    } catch (error) {
+      console.error("Failed to check blog post like:", error);
+      return false;
+    }
+  }
+
+  // Blog Bookmarks
+  async toggleBlogPostBookmark(postId, sessionId, userId = null) {
+    try {
+      // Check if already bookmarked
+      const queries = [
+        Query.equal("postId", postId),
+        Query.equal("sessionId", sessionId)
+      ];
+
+      const existingBookmarks = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogBookmarks,
+        queries
+      );
+
+      if (existingBookmarks.documents.length > 0) {
+        // Remove bookmark
+        await this.databases.deleteDocument(
+          conf.appwriteDatabaseId,
+          conf.appwriteCollectionBlogBookmarks,
+          existingBookmarks.documents[0].$id
+        );
+
+        // Decrement post bookmarks count
+        const post = await this.getBlogPost(postId);
+        const currentBookmarks = Math.max(0, (post.bookmarksCount || 0) - 1);
+        await this.updateBlogPost(postId, { bookmarksCount: currentBookmarks });
+
+        return { bookmarked: false, bookmarks: currentBookmarks };
+      } else {
+        // Add bookmark
+        await this.databases.createDocument(
+          conf.appwriteDatabaseId,
+          conf.appwriteCollectionBlogBookmarks,
+          ID.unique(),
+          {
+            postId,
+            sessionId,
+            userId
+          }
+        );
+
+        // Increment post bookmarks count
+        const post = await this.getBlogPost(postId);
+        const currentBookmarks = (post.bookmarksCount || 0) + 1;
+        await this.updateBlogPost(postId, { bookmarksCount: currentBookmarks });
+
+        return { bookmarked: true, bookmarks: currentBookmarks };
+      }
+    } catch (error) {
+      console.error("Failed to toggle blog post bookmark:", error);
+      throw error;
+    }
+  }
+
+  async checkBlogPostBookmark(postId, sessionId) {
+    try {
+      const queries = [
+        Query.equal("postId", postId),
+        Query.equal("sessionId", sessionId)
+      ];
+
+      const bookmarks = await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogBookmarks,
+        queries
+      );
+
+      return bookmarks.documents.length > 0;
+    } catch (error) {
+      console.error("Failed to check blog post bookmark:", error);
+      return false;
+    }
+  }
+
+  // Blog Comments
+  async createBlogComment(commentData) {
+    try {
+      const comment = await this.databases.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogComments,
+        ID.unique(),
+        {
+          ...commentData,
+          status: 'approved' // Auto-approve for now, can add moderation later
+        }
+      );
+
+      // Increment post comments count
+      const post = await this.getBlogPost(commentData.postId);
+      const currentComments = (post.commentsCount || 0) + 1;
+      await this.updateBlogPost(commentData.postId, { commentsCount: currentComments });
+
+      return comment;
+    } catch (error) {
+      console.error("Failed to create blog comment:", error);
+      throw error;
+    }
+  }
+
+  async getBlogComments(postId, status = 'approved') {
+    try {
+      const queries = [
+        Query.equal("postId", postId),
+        Query.equal("status", status),
+        Query.orderDesc("$createdAt")
+      ];
+
+      return await this.databases.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogComments,
+        queries
+      );
+    } catch (error) {
+      console.error("Failed to get blog comments:", error);
+      throw error;
+    }
+  }
+
+  async updateBlogComment(commentId, commentData) {
+    try {
+      return await this.databases.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogComments,
+        commentId,
+        commentData
+      );
+    } catch (error) {
+      console.error("Failed to update blog comment:", error);
+      throw error;
+    }
+  }
+
+  async deleteBlogComment(commentId, postId) {
+    try {
+      await this.databases.deleteDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionBlogComments,
+        commentId
+      );
+
+      // Decrement post comments count
+      const post = await this.getBlogPost(postId);
+      const currentComments = Math.max(0, (post.commentsCount || 0) - 1);
+      await this.updateBlogPost(postId, { commentsCount: currentComments });
+
+      return true;
+    } catch (error) {
+      console.error("Failed to delete blog comment:", error);
+      throw error;
+    }
+  }
+
+  // Session management for anonymous users
+  generateSessionId() {
+    return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+  }
+
+  getSessionId() {
+    let sessionId = localStorage.getItem('blog_session_id');
+    if (!sessionId) {
+      sessionId = this.generateSessionId();
+      localStorage.setItem('blog_session_id', sessionId);
+    }
+    return sessionId;
   }
 }
 

@@ -1,26 +1,49 @@
+import dotenv from 'dotenv';
 import { Client, Databases, Storage, Permission, Role } from 'appwrite';
-import conf from '../conf/conf.js';
 
-// Database setup utility
-export const setupDatabase = async () => {
+// Load environment variables
+dotenv.config();
+
+console.log('🚀 Starting database setup...');
+
+// Configuration
+const config = {
+    appwriteUrl: process.env.VITE_APPWRITE_ENDPOINT,
+    appwriteProjectId: process.env.VITE_APPWRITE_PROJECT_ID,
+    appwriteDatabaseId: process.env.VITE_APPWRITE_DATABASE_ID,
+    appwriteCollectionProjects: process.env.VITE_APPWRITE_COLLECTION_PROJECTS || 'portfolio_projects',
+    appwriteCollectionSkills: process.env.VITE_APPWRITE_COLLECTION_SKILLS || 'portfolio_skills',
+    appwriteCollectionExperience: process.env.VITE_APPWRITE_COLLECTION_EXPERIENCE || 'portfolio_experience',
+    appwriteCollectionAbout: process.env.VITE_APPWRITE_COLLECTION_ABOUT || 'portfolio_about',
+    appwriteCollectionContact: process.env.VITE_APPWRITE_COLLECTION_CONTACT || 'portfolio_contact',
+    appwriteCollectionCertifications: process.env.VITE_APPWRITE_COLLECTION_CERTIFICATIONS || 'portfolio_certifications',
+    appwriteCollectionBlogCategories: process.env.VITE_APPWRITE_COLLECTION_BLOG_CATEGORIES || 'portfolio_blog_categories',
+    appwriteCollectionBlogPosts: process.env.VITE_APPWRITE_COLLECTION_BLOG_POSTS || 'portfolio_blog_posts',
+    appwriteCollectionBlogComments: process.env.VITE_APPWRITE_COLLECTION_BLOG_COMMENTS || 'portfolio_blog_comments',
+    appwriteCollectionBlogLikes: process.env.VITE_APPWRITE_COLLECTION_BLOG_LIKES || 'portfolio_blog_likes',
+    appwriteCollectionBlogBookmarks: process.env.VITE_APPWRITE_COLLECTION_BLOG_BOOKMARKS || 'portfolio_blog_bookmarks',
+    appwriteBucketId: process.env.VITE_APPWRITE_STORAGE_BUCKET,
+};
+
+// Database setup function
+const setupDatabase = async () => {
   try {
     const client = new Client();
     client
-      .setEndpoint(conf.appwriteUrl)
-      .setProject(conf.appwriteProjectId);
+      .setEndpoint(config.appwriteUrl)
+      .setProject(config.appwriteProjectId);
 
     const databases = new Databases(client);
     const storage = new Storage(client);
 
-    console.log('🚀 Setting up database collections...');
-    console.log('📊 Database ID:', conf.appwriteDatabaseId);
-    console.log('🏢 Project ID:', conf.appwriteProjectId);
-    console.log('🌐 Endpoint:', conf.appwriteUrl);
+    console.log('📊 Database ID:', config.appwriteDatabaseId);
+    console.log('🏢 Project ID:', config.appwriteProjectId);
+    console.log('🌐 Endpoint:', config.appwriteUrl);
 
     // Collection schemas
     const collections = [
       {
-        id: conf.appwriteCollectionProjects,
+        id: config.appwriteCollectionProjects,
         name: 'Projects',
         attributes: [
           { key: 'title', type: 'string', size: 255, required: true },
@@ -35,7 +58,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionSkills,
+        id: config.appwriteCollectionSkills,
         name: 'Skills',
         attributes: [
           { key: 'name', type: 'string', size: 100, required: true },
@@ -48,7 +71,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionExperience,
+        id: config.appwriteCollectionExperience,
         name: 'Experience',
         attributes: [
           { key: 'company', type: 'string', size: 255, required: true },
@@ -65,54 +88,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionAbout,
-        name: 'About',
-        attributes: [
-          { key: 'name', type: 'string', size: 255, required: true },
-          { key: 'title', type: 'string', size: 255, required: true },
-          { key: 'bio', type: 'string', size: 2000, required: true },
-          { key: 'profileImage', type: 'string', size: 255, required: false },
-          { key: 'resume', type: 'string', size: 255, required: false },
-          { key: 'location', type: 'string', size: 255, required: false },
-          { key: 'email', type: 'string', size: 255, required: false },
-          { key: 'phone', type: 'string', size: 50, required: false },
-          { key: 'website', type: 'string', size: 255, required: false },
-          { key: 'socialLinks', type: 'string', size: 2000, required: false },
-          { key: 'status', type: 'string', size: 50, required: false, default: 'active' }
-        ]
-      },
-      {
-        id: conf.appwriteCollectionContact,
-        name: 'Contact',
-        attributes: [
-          { key: 'name', type: 'string', size: 255, required: true },
-          { key: 'email', type: 'string', size: 255, required: true },
-          { key: 'subject', type: 'string', size: 255, required: true },
-          { key: 'message', type: 'string', size: 2000, required: true },
-          { key: 'status', type: 'string', size: 50, required: false, default: 'unread' },
-          { key: 'createdAt', type: 'string', size: 50, required: false }
-        ]
-      },
-      {
-        id: conf.appwriteCollectionCertifications,
-        name: 'Certifications',
-        attributes: [
-          { key: 'title', type: 'string', size: 255, required: true },
-          { key: 'issuer', type: 'string', size: 255, required: true },
-          { key: 'description', type: 'string', size: 1000, required: false },
-          { key: 'issueDate', type: 'string', size: 20, required: true },
-          { key: 'expiryDate', type: 'string', size: 20, required: false },
-          { key: 'credentialId', type: 'string', size: 255, required: false },
-          { key: 'verificationUrl', type: 'string', size: 500, required: false },
-          { key: 'certificateImage', type: 'string', size: 255, required: false },
-          { key: 'skills', type: 'string', size: 1000, required: false, array: true },
-          { key: 'featured', type: 'boolean', required: false, default: false },
-          { key: 'status', type: 'string', size: 50, required: false, default: 'active' },
-          { key: 'order', type: 'integer', required: false, default: 0 }
-        ]
-      },
-      {
-        id: conf.appwriteCollectionBlogCategories,
+        id: config.appwriteCollectionBlogCategories,
         name: 'Blog Categories',
         attributes: [
           { key: 'name', type: 'string', size: 255, required: true },
@@ -125,7 +101,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionBlogPosts,
+        id: config.appwriteCollectionBlogPosts,
         name: 'Blog Posts',
         attributes: [
           { key: 'title', type: 'string', size: 255, required: true },
@@ -152,7 +128,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionBlogComments || 'portfolio_blog_comments',
+        id: config.appwriteCollectionBlogComments,
         name: 'Blog Comments',
         attributes: [
           { key: 'postId', type: 'string', size: 255, required: true },
@@ -169,7 +145,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionBlogLikes || 'portfolio_blog_likes',
+        id: config.appwriteCollectionBlogLikes,
         name: 'Blog Likes',
         attributes: [
           { key: 'postId', type: 'string', size: 255, required: true },
@@ -180,7 +156,7 @@ export const setupDatabase = async () => {
         ]
       },
       {
-        id: conf.appwriteCollectionBlogBookmarks || 'portfolio_blog_bookmarks',
+        id: config.appwriteCollectionBlogBookmarks,
         name: 'Blog Bookmarks',
         attributes: [
           { key: 'postId', type: 'string', size: 255, required: true },
@@ -196,8 +172,8 @@ export const setupDatabase = async () => {
       try {
         console.log(`📝 Creating collection: ${collection.name} (ID: ${collection.id})`);
 
-        const createdCollection = await databases.createCollection(
-          conf.appwriteDatabaseId,
+        await databases.createCollection(
+          config.appwriteDatabaseId,
           collection.id,
           collection.name,
           [
@@ -205,17 +181,21 @@ export const setupDatabase = async () => {
             Permission.create(Role.users()),
             Permission.update(Role.users()),
             Permission.delete(Role.users())
-          ]
+          ],
+          false // documentSecurity
         );
 
         console.log(`✅ Collection ${collection.name} created successfully`);
+
+        // Wait a bit before creating attributes
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Create attributes
         for (const attr of collection.attributes) {
           try {
             if (attr.type === 'string') {
               await databases.createStringAttribute(
-                conf.appwriteDatabaseId,
+                config.appwriteDatabaseId,
                 collection.id,
                 attr.key,
                 attr.size,
@@ -225,7 +205,7 @@ export const setupDatabase = async () => {
               );
             } else if (attr.type === 'integer') {
               await databases.createIntegerAttribute(
-                conf.appwriteDatabaseId,
+                config.appwriteDatabaseId,
                 collection.id,
                 attr.key,
                 attr.required || false,
@@ -236,7 +216,7 @@ export const setupDatabase = async () => {
               );
             } else if (attr.type === 'boolean') {
               await databases.createBooleanAttribute(
-                conf.appwriteDatabaseId,
+                config.appwriteDatabaseId,
                 collection.id,
                 attr.key,
                 attr.required || false,
@@ -244,8 +224,10 @@ export const setupDatabase = async () => {
                 attr.array || false
               );
             }
-            
+
             console.log(`  - Attribute ${attr.key} created`);
+            // Small delay between attributes
+            await new Promise(resolve => setTimeout(resolve, 200));
           } catch (attrError) {
             console.log(`  - Attribute ${attr.key} already exists or error:`, attrError.message);
           }
@@ -256,61 +238,21 @@ export const setupDatabase = async () => {
       }
     }
 
-    // Create storage bucket
-    try {
-      console.log('Creating storage bucket...');
-      const bucket = await storage.createBucket(
-        conf.appwriteBucketId,
-        'Portfolio Files',
-        [
-          Permission.read(Role.any()),
-          Permission.create(Role.users()),
-          Permission.update(Role.users()),
-          Permission.delete(Role.users())
-        ],
-        false, // fileSecurity
-        true,  // enabled
-        10485760, // maximumFileSize (10MB)
-        ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'doc', 'docx'], // allowedFileExtensions
-        'gzip', // compression
-        false,  // encryption
-        false   // antivirus
-      );
-      console.log('Storage bucket created successfully');
-    } catch (bucketError) {
-      console.log('Storage bucket already exists or error:', bucketError.message);
-    }
-
-    console.log('Database setup completed!');
+    console.log('✅ Database setup completed!');
     return { success: true, message: 'Database setup completed successfully' };
 
   } catch (error) {
-    console.error('Database setup failed:', error);
+    console.error('❌ Database setup failed:', error);
     return { success: false, message: error.message };
   }
 };
 
-// Helper function to check database status
-export const checkDatabaseStatus = async () => {
-  try {
-    const client = new Client();
-    client
-      .setEndpoint(conf.appwriteUrl)
-      .setProject(conf.appwriteProjectId);
-
-    const databases = new Databases(client);
-    
-    const collections = await databases.listCollections(conf.appwriteDatabaseId);
-    
-    return {
-      success: true,
-      collections: collections.documents,
-      message: `Found ${collections.documents.length} collections`
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    };
+// Run the setup
+setupDatabase().then(result => {
+  if (result.success) {
+    console.log('🎉 All done! Your collections should now be available.');
+  } else {
+    console.log('💥 Setup failed:', result.message);
+    process.exit(1);
   }
-};
+});

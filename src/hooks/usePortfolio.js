@@ -410,12 +410,15 @@ export const useBlogCategories = () => {
     try {
       const newCategory = await portfolioService.createBlogCategory(categoryData);
       setCategories(prev => [newCategory, ...prev]);
+      // Refresh the list to ensure consistency
+      await fetchCategories();
       return newCategory;
     } catch (err) {
       setError(err.message);
+      console.error('Error creating blog category:', err);
       throw err;
     }
-  }, []);
+  }, [fetchCategories]);
 
   const updateCategory = useCallback(async (categoryId, categoryData) => {
     try {
