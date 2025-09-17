@@ -77,8 +77,21 @@ export class AuthService {
   // Get current user
   async getCurrentUser() {
     try {
+      // First check if there's a valid session
+      const hasSession = await this.hasValidSession();
+      if (!hasSession) {
+        return null;
+      }
+      
+      // If there's a valid session, get user details
       return await this.account.get();
     } catch (error) {
+      // Handle specific Appwrite errors
+      if (error.code === 401 || error.message?.includes('missing scopes') || error.message?.includes('guests')) {
+        // User is not authenticated or has guest role
+        return null;
+      }
+      
       console.error("Failed to get current user:", error);
       return null;
     }
@@ -87,8 +100,7 @@ export class AuthService {
   // Check if user is logged in
   async isLoggedIn() {
     try {
-      const user = await this.getCurrentUser();
-      return !!user;
+      return await this.hasValidSession();
     } catch (error) {
       return false;
     }
@@ -110,7 +122,10 @@ export class AuthService {
       const user = await this.getCurrentUser();
       return user?.prefs || {};
     } catch (error) {
-      console.error("Failed to get preferences:", error);
+      // Don't log authentication-related errors as they're expected for non-logged-in users
+      if (!error.message?.includes('missing scopes') && !error.message?.includes('guests')) {
+        console.error("Failed to get preferences:", error);
+      }
       return {};
     }
   }
@@ -190,7 +205,24 @@ export class AuthService {
     try {
       return await this.account.listSessions();
     } catch (error) {
-      console.error("Failed to get sessions:", error);
+      // Don't log authentication-related errors as they're expected for non-logged-in users
+      if (!error.message?.includes('missing scopes') && !error.message?.includes('guests')) {
+        console.error("Failed to get sessions:", error);
+      }
+      throw error;
+    }
+  }
+
+  // Validate current session (internal helper method)
+  async hasValidSession() {
+    try {
+      const sessions = await this.account.listSessions();
+      return sessions && sessions.total > 0;
+    } catch (error) {
+      // Guest users or unauthenticated users will get scope errors
+      if (error.message?.includes('missing scopes') || error.message?.includes('guests')) {
+        return false;
+      }
       throw error;
     }
   }
@@ -225,7 +257,10 @@ export class AuthService {
       const adminEmails = ['admin@imteaj.dev', 'imteajsajid12@gmail.com']; // Add your admin emails
       return adminEmails.includes(user.email) || user.prefs?.isAdmin === true;
     } catch (error) {
-      console.error("Failed to check admin status:", error);
+      // Don't log authentication-related errors as they're expected for non-logged-in users
+      if (!error.message?.includes('missing scopes') && !error.message?.includes('guests')) {
+        console.error("Failed to check admin status:", error);
+      }
       return false;
     }
   }

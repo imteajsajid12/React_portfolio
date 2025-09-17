@@ -2,8 +2,9 @@
 
     import React, { useEffect, useState } from 'react'
     import { motion, AnimatePresence } from 'framer-motion'
-    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X, Award, Calendar, CheckCircle } from 'lucide-react'
+    import { Briefcase, Cloud, Code2, Database, ExternalLink, FolderOpen, Github, Linkedin, Mail, MapPin, Moon, Palette, Search, Server, Sun, Twitter, Menu, X, Award, Calendar, CheckCircle, BookOpen } from 'lucide-react'
     import { animateScroll as scroll, Link as ScrollLink } from 'react-scroll'
+    import { Link as RouterLink } from 'react-router-dom'
     import {
         FaCss3Alt,
         FaDocker,
@@ -153,6 +154,11 @@
                                 className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">About</ScrollLink>
                             <ScrollLink to="projects" smooth={true} duration={500}
                                 className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">Projects</ScrollLink>
+                            <RouterLink to="/blog" 
+                                className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer flex items-center gap-2 transition-colors">
+                                <BookOpen className="h-4 w-4" />
+                                Blog
+                            </RouterLink>
                             <ScrollLink to="contact" smooth={true} duration={500}
                                 className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">Contact</ScrollLink>
                             <button
@@ -210,6 +216,11 @@
                                         className="block text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">About</ScrollLink>
                                     <ScrollLink to="projects" smooth={true} duration={500} onClick={toggleMenu}
                                         className="block text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">Projects</ScrollLink>
+                                    <RouterLink to="/blog" onClick={toggleMenu}
+                                        className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer transition-colors">
+                                        <BookOpen className="h-4 w-4" />
+                                        Blog
+                                    </RouterLink>
                                     <ScrollLink to="contact" smooth={true} duration={500} onClick={toggleMenu}
                                         className="block text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer">Contact</ScrollLink>
                                     <button

@@ -723,6 +723,50 @@ export class PortfolioService {
         postData
       );
     } catch (error) {
+      // Temporary fix: If error is about unknown attributes, retry without engagement fields
+      if (error.message?.includes('Unknown attribute') && 
+          (error.message?.includes('commentsCount') || 
+           error.message?.includes('likesCount') || 
+           error.message?.includes('bookmarksCount') || 
+           error.message?.includes('likes') ||
+           error.message?.includes('bookmarks') ||
+           error.message?.includes('comments') ||
+           error.message?.includes('views'))) {
+        
+        console.warn('⚠️ Engagement attributes not found in blog posts collection. Updating without engagement fields.');
+        console.log('📝 Please add these attributes to your blog posts collection:');
+        console.log('   - commentsCount (integer, default: 0)');
+        console.log('   - likesCount (integer, default: 0)');
+        console.log('   - bookmarksCount (integer, default: 0)');
+        console.log('   - views (integer, default: 0)');
+        console.log('   - likes (integer, default: 0) [legacy field]');
+        console.log('   - bookmarks (integer, default: 0) [legacy field]');
+        console.log('   - comments (integer, default: 0) [legacy field]');
+        
+        // Remove all possible engagement fields and retry
+        const filteredData = { ...postData };
+        delete filteredData.commentsCount;
+        delete filteredData.likesCount;
+        delete filteredData.bookmarksCount;
+        delete filteredData.views;
+        delete filteredData.likes;
+        delete filteredData.bookmarks;
+        delete filteredData.comments;
+        
+        // If there's still data to update, retry
+        if (Object.keys(filteredData).length > 0) {
+          return await this.databases.updateDocument(
+            conf.appwriteDatabaseId,
+            conf.appwriteCollectionBlogPosts,
+            postId,
+            filteredData
+          );
+        }
+        
+        // If only engagement fields were being updated, return success
+        return { success: true, message: 'Engagement fields skipped - attributes not found' };
+      }
+      
       console.error("Failed to update blog post:", error);
       throw error;
     }
@@ -780,8 +824,8 @@ export class PortfolioService {
 
         // Decrement post likes count
         const post = await this.getBlogPost(postId);
-        const currentLikes = Math.max(0, (post.likes || 0) - 1);
-        await this.updateBlogPost(postId, { likes: currentLikes });
+        const currentLikes = Math.max(0, (post.likesCount || post.likes || 0) - 1);
+        await this.updateBlogPost(postId, { likesCount: currentLikes });
 
         return { liked: false, likes: currentLikes };
       } else {
@@ -800,14 +844,19 @@ export class PortfolioService {
 
         // Increment post likes count
         const post = await this.getBlogPost(postId);
-        const currentLikes = (post.likes || 0) + 1;
-        await this.updateBlogPost(postId, { likes: currentLikes });
+        const currentLikes = (post.likesCount || post.likes || 0) + 1;
+        await this.updateBlogPost(postId, { likesCount: currentLikes });
 
         return { liked: true, likes: currentLikes };
       }
     } catch (error) {
+      // Handle collection not found errors gracefully
+      if (error.message?.includes('Collection with the requested ID could not be found')) {
+        console.warn("Blog likes collection not found. Feature disabled:", error.message);
+        return { liked: false, likes: 0 }; // Return safe defaults
+      }
       console.error("Failed to toggle blog post like:", error);
-      throw error;
+      return { liked: false, likes: 0 }; // Return safe defaults instead of throwing
     }
   }
 
@@ -826,6 +875,11 @@ export class PortfolioService {
 
       return likes.documents.length > 0;
     } catch (error) {
+      // Handle collection not found errors gracefully
+      if (error.message?.includes('Collection with the requested ID could not be found')) {
+        console.warn("Blog likes collection not found. Feature disabled:", error.message);
+        return false;
+      }
       console.error("Failed to check blog post like:", error);
       return false;
     }
@@ -901,6 +955,11 @@ export class PortfolioService {
 
       return bookmarks.documents.length > 0;
     } catch (error) {
+      // Handle collection not found errors gracefully
+      if (error.message?.includes('Collection with the requested ID could not be found')) {
+        console.warn("Blog bookmarks collection not found. Feature disabled:", error.message);
+        return false;
+      }
       console.error("Failed to check blog post bookmark:", error);
       return false;
     }
@@ -945,8 +1004,13 @@ export class PortfolioService {
         queries
       );
     } catch (error) {
+      // Handle collection not found errors gracefully
+      if (error.message?.includes('Collection with the requested ID could not be found')) {
+        console.warn("Blog comments collection not found. Feature disabled:", error.message);
+        return { documents: [] }; // Return empty structure matching expected format
+      }
       console.error("Failed to get blog comments:", error);
-      throw error;
+      return { documents: [] }; // Return empty structure on any error
     }
   }
 
@@ -983,6 +1047,8 @@ export class PortfolioService {
       throw error;
     }
   }
+
+
 
   // Session management for anonymous users
   generateSessionId() {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Calendar, 
@@ -32,11 +33,10 @@ import portfolioService from '../../services/portfolioService';
 import BlogContent from './BlogContent';
 
 const BlogPage = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   
@@ -83,6 +83,27 @@ const BlogPage = () => {
     });
   };
 
+  const calculateReadingTime = (content) => {
+    if (!content) return 0;
+    const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+    const wordsPerMinute = 200;
+    return Math.ceil(words / wordsPerMinute);
+  };
+
+  const formatTimeAgo = (dateString) => {
+    const now = new Date();
+    const postDate = new Date(dateString);
+    const diffInSeconds = Math.floor((now - postDate) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 2629746) return `${Math.floor(diffInSeconds / 604800)}w ago`;
+    if (diffInSeconds < 31556952) return `${Math.floor(diffInSeconds / 2629746)}mo ago`;
+    return `${Math.floor(diffInSeconds / 31556952)}y ago`;
+  };
+
   const getCategoryName = (categoryId) => {
     const category = categories.find(cat => cat.$id === categoryId);
     return category?.name || 'Uncategorized';
@@ -93,20 +114,16 @@ const BlogPage = () => {
     return category?.color || '#3B82F6';
   };
 
-  const openPost = async (post) => {
-    setSelectedPost(post);
-    setIsPostModalOpen(true);
-    // Increment view count
+  const handlePostClick = async (post) => {
     try {
+      // Increment view count
       await portfolioService.incrementBlogPostViews(post.$id);
     } catch (error) {
       console.error('Failed to increment view count:', error);
     }
-  };
-
-  const closePost = () => {
-    setSelectedPost(null);
-    setIsPostModalOpen(false);
+    
+    // Navigate to blog detail page using the post slug
+    navigate(`/blog/${post.slug || post.$id}`);
   };
 
   const getCategoryIcon = (categoryName) => {
@@ -418,7 +435,8 @@ const BlogPage = () => {
                     <motion.div
                       key={post.$id}
                       variants={itemFadeIn}
-                      className={`relative bg-gradient-to-r ${getTechGradient(index)} p-1 rounded-2xl group`}
+                      onClick={() => handlePostClick(post)}
+                      className={`relative bg-gradient-to-r ${getTechGradient(index)} p-1 rounded-2xl group cursor-pointer`}
                     >
                       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 h-full">
                         <div className="grid lg:grid-cols-2 gap-8 items-center">
@@ -448,11 +466,11 @@ const BlogPage = () => {
                             <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-6">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
-                                <span>{formatDate(post.publishedAt || post.$createdAt)}</span>
+                                <span>{formatTimeAgo(post.publishedAt || post.$createdAt)}</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="h-4 w-4" />
-                                <span>{post.readTime} min read</span>
+                                <span>{post.readTime || calculateReadingTime(post.content)} min read</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Eye className="h-4 w-4" />
@@ -500,6 +518,7 @@ const BlogPage = () => {
                     key={post.$id}
                     variants={itemFadeIn}
                     whileHover={{ y: -8 }}
+                    onClick={() => handlePostClick(post)}
                     className={`group cursor-pointer transition-all duration-300 ${
                       viewMode === 'grid' 
                         ? 'bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden'

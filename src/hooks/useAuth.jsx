@@ -15,18 +15,32 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setAuthError(null);
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-
-      if (currentUser) {
-        const adminStatus = await authService.isAdmin();
-        setIsAdmin(adminStatus);
+      
+      // First check if user is logged in (more efficient)
+      const isLoggedIn = await authService.isLoggedIn();
+      
+      if (isLoggedIn) {
+        // Only get user details if logged in
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+        
+        if (currentUser) {
+          const adminStatus = await authService.isAdmin();
+          setIsAdmin(adminStatus);
+        } else {
+          setIsAdmin(false);
+        }
       } else {
+        // User is not logged in
+        setUser(null);
         setIsAdmin(false);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setAuthError(error.message);
+      // Only log non-authentication errors
+      if (!error.message?.includes('missing scopes') && !error.message?.includes('guests')) {
+        console.error('Auth check failed:', error);
+        setAuthError(error.message);
+      }
       setUser(null);
       setIsAdmin(false);
     } finally {
