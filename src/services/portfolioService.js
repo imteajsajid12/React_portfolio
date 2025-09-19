@@ -262,7 +262,12 @@ export class PortfolioService {
   
   async createAbout(aboutData) {
     try {
-      return await this.databases.createDocument(
+      // Prepare data for saving - stringify socialLinks if it's an object
+      const socialLinksToSave = aboutData.socialLinks && typeof aboutData.socialLinks === 'object'
+        ? JSON.stringify(aboutData.socialLinks)
+        : aboutData.socialLinks;
+        
+      const result = await this.databases.createDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionAbout,
         ID.unique(),
@@ -276,10 +281,22 @@ export class PortfolioService {
           email: aboutData.email,
           phone: aboutData.phone,
           website: aboutData.website,
-          socialLinks: aboutData.socialLinks, // Object with github, linkedin, twitter, etc.
+          socialLinks: socialLinksToSave, // JSON string for storage
           status: "active"
         }
       );
+      
+      // Parse socialLinks back to object for return
+      if (result.socialLinks && typeof result.socialLinks === 'string') {
+        try {
+          result.socialLinks = JSON.parse(result.socialLinks);
+        } catch (parseError) {
+          console.warn("Failed to parse socialLinks JSON:", parseError);
+          result.socialLinks = {};
+        }
+      }
+      
+      return result;
     } catch (error) {
       console.error("Failed to create about info:", error);
       throw error;
@@ -293,7 +310,21 @@ export class PortfolioService {
         conf.appwriteCollectionAbout,
         [Query.equal("status", "active")]
       );
-      return result.documents[0] || null;
+      const aboutData = result.documents[0] || null;
+      
+      // Parse socialLinks JSON string if it exists
+      if (aboutData && aboutData.socialLinks) {
+        try {
+          aboutData.socialLinks = typeof aboutData.socialLinks === 'string' 
+            ? JSON.parse(aboutData.socialLinks) 
+            : aboutData.socialLinks;
+        } catch (parseError) {
+          console.warn("Failed to parse socialLinks JSON:", parseError);
+          aboutData.socialLinks = {};
+        }
+      }
+      
+      return aboutData;
     } catch (error) {
       console.error("Failed to get about info:", error);
       throw error;
@@ -302,12 +333,30 @@ export class PortfolioService {
 
   async updateAbout(aboutId, aboutData) {
     try {
-      return await this.databases.updateDocument(
+      // Prepare data for saving - stringify socialLinks if it's an object
+      const dataToSave = { ...aboutData };
+      if (dataToSave.socialLinks && typeof dataToSave.socialLinks === 'object') {
+        dataToSave.socialLinks = JSON.stringify(dataToSave.socialLinks);
+      }
+      
+      const result = await this.databases.updateDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionAbout,
         aboutId,
-        aboutData
+        dataToSave
       );
+      
+      // Parse socialLinks back to object for return
+      if (result.socialLinks && typeof result.socialLinks === 'string') {
+        try {
+          result.socialLinks = JSON.parse(result.socialLinks);
+        } catch (parseError) {
+          console.warn("Failed to parse socialLinks JSON:", parseError);
+          result.socialLinks = {};
+        }
+      }
+      
+      return result;
     } catch (error) {
       console.error("Failed to update about info:", error);
       throw error;
@@ -368,13 +417,27 @@ export class PortfolioService {
 
   async uploadFile(file) {
     try {
-      return await this.storage.createFile(
+      console.log('🔧 Upload Configuration:', {
+        bucketId: conf.appwriteBucketId,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type
+      });
+      
+      if (!conf.appwriteBucketId) {
+        throw new Error('Storage bucket ID is not configured. Please check VITE_APPWRITE_STORAGE_BUCKET in your environment variables.');
+      }
+      
+      const result = await this.storage.createFile(
         conf.appwriteBucketId,
         ID.unique(),
         file
       );
+      
+      console.log('✅ File uploaded successfully:', result);
+      return result;
     } catch (error) {
-      console.error("Failed to upload file:", error);
+      console.error("❌ Failed to upload file:", error);
       throw error;
     }
   }

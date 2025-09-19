@@ -15,12 +15,11 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { useAbout } from '../../hooks/usePortfolio';
-import { useImageUpload } from '../../hooks/useFileUpload';
 import portfolioService from '../../services/portfolioService';
 
 const AboutManager = () => {
-  const { about, loading, error, refetch } = useAbout();
-  const { uploadImage, uploading, uploadError } = useImageUpload();
+  const { about, loading, refetch } = useAbout();
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     title: '',
@@ -86,13 +85,46 @@ const AboutManager = () => {
 
   const handleImageUpload = async (file, type) => {
     try {
-      const fileId = await uploadImage(file);
+      setFormError('');
+      setUploading(true);
+      
+      // Validate file type based on type
+      if (type === 'profileImage') {
+        const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validImageTypes.includes(file.type)) {
+          throw new Error('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        }
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          throw new Error('Image size must be less than 5MB');
+        }
+      } else if (type === 'resume') {
+        if (file.type !== 'application/pdf') {
+          throw new Error('Please select a PDF file for resume');
+        }
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+          throw new Error('Resume file size must be less than 10MB');
+        }
+      }
+
+      // Upload file using portfolioService directly
+      console.log(`📤 Uploading ${type}...`, file.name, file.size, 'bytes');
+      const uploadedFile = await portfolioService.uploadFile(file);
+      const fileId = uploadedFile.$id;
+      
+      // Update form data with file ID
       setFormData(prev => ({
         ...prev,
         [type]: fileId
       }));
+      
+      console.log(`✅ ${type} uploaded successfully:`, fileId);
     } catch (error) {
-      console.error('Failed to upload image:', error);
+      console.error('Failed to upload file:', error);
+      setFormError(`Upload failed: ${error.message}`);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -316,12 +348,16 @@ const AboutManager = () => {
               </label>
               <div className="space-y-4">
                 {/* Current Image Preview */}
-                {formData.profileImage && (
+                {formData.profileImage && formData.profileImage.trim() !== '' ? (
                   <div className="flex items-center space-x-4">
                     <img
                       src={portfolioService.getFileView(formData.profileImage)}
                       alt="Profile"
                       className="w-24 h-24 object-cover rounded-full border-4 border-blue-200 dark:border-blue-800"
+                      onError={(e) => {
+                        e.target.src = '/api/placeholder/100/100';
+                        e.target.className = "w-24 h-24 object-cover rounded-full border-4 border-red-200 dark:border-red-800";
+                      }}
                     />
                     <div>
                       <p className="text-sm text-green-600 dark:text-green-400 font-medium">
@@ -329,6 +365,18 @@ const AboutManager = () => {
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         This image will appear in your portfolio
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <ImageIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                    <div>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
+                        No profile image uploaded
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Upload a profile image to display in your portfolio
                       </p>
                     </div>
                   </div>
@@ -369,7 +417,7 @@ const AboutManager = () => {
               </label>
               <div className="space-y-4">
                 {/* Current Resume Status */}
-                {formData.resume && (
+                {formData.resume && formData.resume.trim() !== '' ? (
                   <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
                     <div>
@@ -378,6 +426,18 @@ const AboutManager = () => {
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         Visitors can download your resume from the portfolio
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <FileText className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                    <div>
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">
+                        No resume uploaded
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Upload your resume so visitors can download it
                       </p>
                     </div>
                   </div>
@@ -406,9 +466,9 @@ const AboutManager = () => {
         </div>
 
         {/* Error Message */}
-        {(formError || uploadError) && (
+        {formError && (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-red-700 dark:text-red-300 text-sm">{formError || uploadError}</p>
+            <p className="text-red-700 dark:text-red-300 text-sm">{formError}</p>
           </div>
         )}
 
