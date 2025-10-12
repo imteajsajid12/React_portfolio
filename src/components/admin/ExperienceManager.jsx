@@ -15,6 +15,7 @@ import {
 import { useExperience } from '../../hooks/usePortfolio';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import { useImageUpload } from '../../hooks/useFileUpload';
+import portfolioService from '../../services/portfolioService';
 
 const ExperienceManager = () => {
   const { experiences, loading, createExperience, updateExperience, deleteExperience } = useExperience();
@@ -259,14 +260,17 @@ const ExperienceManager = () => {
                 {/* Company Logo */}
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                   {experience.companyLogo ? (
-                    <img 
-                      src={`${experience.companyLogo}`} 
+                    <img
+                      src={portfolioService.getFileView(experience.companyLogo)}
                       alt={experience.company}
                       className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'block';
+                      }}
                     />
-                  ) : (
-                    <Building className="h-8 w-8 text-gray-400" />
-                  )}
+                  ) : null}
+                  <Building className={`h-8 w-8 text-gray-400 ${experience.companyLogo ? 'hidden' : ''}`} />
                 </div>
 
                 {/* Experience Details */}

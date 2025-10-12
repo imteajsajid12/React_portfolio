@@ -507,9 +507,9 @@
                                     )}
 
                                     {/* Enhanced CTA Buttons */}
-                                    <StaggerContainer 
+                                    <StaggerContainer
                                         staggerDelay={0.2}
-                                        className="flex flex-col sm:flex-row gap-6 mt-8"
+                                        className="flex flex-col sm:flex-row flex-wrap gap-4 mt-8"
                                     >
                                         <StaggerItem>
                                             <ScrollLink
@@ -542,7 +542,7 @@
                                                 smooth={true}
                                                 duration={500}
                                             >
-                                                <AnimatedButton 
+                                                <AnimatedButton
                                                     variant="outline"
                                                     size="lg"
                                                     icon={<FolderOpen className="h-5 w-5" />}
@@ -552,57 +552,151 @@
                                                 </AnimatedButton>
                                             </ScrollLink>
                                         </StaggerItem>
-                                        
-                                        {/* New Social Links */}
-                                        <StaggerItem>
-                                            <div className="flex gap-3">
-                                                {about?.socialLinks?.github && (
-                                                    <motion.a
-                                                        href={about.socialLinks.github}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                        whileHover={{ scale: 1.1, y: -2 }}
-                                                        whileTap={{ scale: 0.9 }}
-                                                    >
-                                                        <Github className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                                                    </motion.a>
-                                                )}
-                                                {about?.socialLinks?.linkedin && (
-                                                    <motion.a
-                                                        href={about.socialLinks.linkedin}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                        whileHover={{ scale: 1.1, y: -2 }}
-                                                        whileTap={{ scale: 0.9 }}
-                                                    >
-                                                        <Linkedin className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                                                    </motion.a>
-                                                )}
-                                                {about?.email && (
-                                                    <motion.a
-                                                        href={`mailto:${about.email}`}
-                                                        className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                                                        whileHover={{ scale: 1.1, y: -2 }}
-                                                        whileTap={{ scale: 0.9 }}
-                                                    >
-                                                        <Mail className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                                                    </motion.a>
-                                                )}
-                                            </div>
-                                        </StaggerItem>
+
+                                        {/* Resume Download Button - Integrated with CTAs */}
+                                        {about?.resume && (
+                                            <StaggerItem>
+                                                <motion.a
+                                                    href={portfolioService.getFileView(about.resume)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    whileHover={{ scale: 1.05, y: -2 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="group relative flex items-center justify-center gap-3 w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                                                >
+                                                    {/* Background Animation */}
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                                                    {/* Content */}
+                                                    <div className="relative flex items-center gap-3">
+                                                        {/* Resume Icon */}
+                                                        <motion.div
+                                                            animate={{ rotateY: [0, 180, 360] }}
+                                                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                                            className="flex-shrink-0"
+                                                        >
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                            </svg>
+                                                        </motion.div>
+
+                                                        {/* Text */}
+                                                        <span className="text-sm sm:text-base">Download Resume</span>
+
+                                                        {/* Download Arrow */}
+                                                        <motion.div
+                                                            animate={{ y: [0, 3, 0] }}
+                                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                                            className="flex-shrink-0"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3" />
+                                                            </svg>
+                                                        </motion.div>
+                                                    </div>
+
+                                                    {/* Availability Indicator */}
+                                                    <motion.div
+                                                        animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                                                        transition={{ duration: 2, repeat: Infinity }}
+                                                        className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full"
+                                                    />
+                                                </motion.a>
+                                            </StaggerItem>
+                                        )}
+
                                     </StaggerContainer>
+
+                                    {/* Social Links Section */}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 1.2 }}
+                                        className="flex items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700"
+                                    >
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                            Connect with me:
+                                        </span>
+                                        <div className="flex gap-3">
+                                            {about?.socialLinks?.github && (
+                                                <motion.a
+                                                    href={about.socialLinks.github}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-900 dark:hover:bg-gray-700 transition-all duration-300 group"
+                                                    whileHover={{ scale: 1.1, y: -2 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <Github className="h-5 w-5 text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors" />
+                                                </motion.a>
+                                            )}
+                                            {about?.socialLinks?.linkedin && (
+                                                <motion.a
+                                                    href={about.socialLinks.linkedin}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-blue-600 dark:hover:bg-blue-600 transition-all duration-300 group"
+                                                    whileHover={{ scale: 1.1, y: -2 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <Linkedin className="h-5 w-5 text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors" />
+                                                </motion.a>
+                                            )}
+                                            {about?.email && (
+                                                <motion.a
+                                                    href={`mailto:${about.email}`}
+                                                    className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-red-500 dark:hover:bg-red-500 transition-all duration-300 group"
+                                                    whileHover={{ scale: 1.1, y: -2 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <Mail className="h-5 w-5 text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors" />
+                                                </motion.a>
+                                            )}
+
+                                            {/* Secondary Resume Link - Subtle Option */}
+                                            {about?.resume && (
+                                                <motion.a
+                                                    href={portfolioService.getFileView(about.resume)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download
+                                                    className="relative p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-700 hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-800/30 dark:hover:to-teal-800/30 transition-all duration-300 group"
+                                                    whileHover={{ scale: 1.1, y: -2 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                    title="Download Resume"
+                                                >
+                                                    <motion.div
+                                                        animate={{ rotateY: [0, 180, 360] }}
+                                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                                    >
+                                                        <svg className="h-5 w-5 text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                    </motion.div>
+
+                                                    {/* Subtle indicator */}
+                                                    <motion.div
+                                                        animate={{ scale: [1, 1.2, 1] }}
+                                                        transition={{ duration: 2, repeat: Infinity }}
+                                                        className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full"
+                                                    />
+                                                </motion.a>
+                                            )}
+
+                                        </div>
+                                    </motion.div>
                                 </div>
 
                                 {/* Enhanced Profile Image with Advanced Animations */}
-                                <ScrollAnimatedSection 
+                                <ScrollAnimatedSection
                                     animation="scaleIn"
                                     delay={0.6}
                                     duration={1}
                                     className="relative flex justify-center lg:justify-end"
                                 >
                                     <div className="relative">
+
                                         {/* Animated Background Rings */}
                                         <motion.div 
                                             animate={{ 

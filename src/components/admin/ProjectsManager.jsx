@@ -243,16 +243,19 @@ const ProjectsManager = () => {
             {/* Project Image */}
             <div className="h-48 bg-gray-100 dark:bg-gray-700 relative">
               {project.image ? (
-                <img 
-                  src={`${project.image}`} 
+                <img
+                  src={portfolioService.getFileView(project.image)}
                   alt={project.title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
                 />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Image className="h-12 w-12 text-gray-400" />
-                </div>
-              )}
+              ) : null}
+              <div className={`w-full h-full flex items-center justify-center ${project.image ? 'hidden' : ''}`}>
+                <Image className="h-12 w-12 text-gray-400" />
+              </div>
               {project.featured && (
                 <div className="absolute top-2 right-2 px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
                   Featured

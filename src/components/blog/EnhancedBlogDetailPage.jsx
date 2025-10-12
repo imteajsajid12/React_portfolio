@@ -589,111 +589,149 @@ const EnhancedBlogDetailPage = () => {
       {/* Main Content */}
       <div ref={contentRef} className="overflow-y-auto h-screen pt-16">
 
-        {/* Modern Tech Hero Section */}
+        {/* Clean & Focused Blog Hero Section */}
         <motion.section
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0, y: 60 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.6, ease: "easeOut" }
-            }
-          }}
-          className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white py-24 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-b border-gray-200 dark:border-gray-700"
         >
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 opacity-40"></div>
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto px-6 text-center">
-            {/* Floating Tech Icons */}
-            <div className="absolute inset-0 overflow-hidden">
-              <motion.div
-                animate={{ y: [-20, 20, -20] }}
-                transition={{ duration: 6, repeat: Infinity }}
-                className="absolute top-20 left-20 text-blue-400/30"
-              >
-                <Code2 size={32} />
-              </motion.div>
-              <motion.div
-                animate={{ y: [20, -20, 20] }}
-                transition={{ duration: 8, repeat: Infinity, delay: 1 }}
-                className="absolute top-40 right-32 text-purple-400/30"
-              >
-                <Database size={28} />
-              </motion.div>
-              <motion.div
-                animate={{ y: [-15, 15, -15] }}
-                transition={{ duration: 7, repeat: Infinity, delay: 2 }}
-                className="absolute bottom-32 left-32 text-green-400/30"
-              >
-                <Terminal size={30} />
-              </motion.div>
-            </div>
-
-            {/* Blog Post Category Badge */}
+          <div className="max-w-4xl mx-auto px-6 py-16">
+            {/* Breadcrumb & Category */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-4"
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-3 mb-6"
             >
-              <span className="inline-flex items-center px-4 py-2 bg-blue-500/20 rounded-full text-blue-300 text-sm font-medium border border-blue-400/30">
-                <BookOpen className="w-4 h-4 mr-2" />
+              <motion.button
+                whileHover={{ x: -2 }}
+                onClick={() => navigate('/blog')}
+                className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </motion.button>
+
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+
+              <span
+                className="px-3 py-1 text-xs font-medium rounded-full text-white"
+                style={{ backgroundColor: getCategoryColor(post?.categoryId) || '#3B82F6' }}
+              >
                 {getCategoryName(post?.categoryId) || 'Article'}
               </span>
             </motion.div>
 
-            {/* Blog Post Title */}
+            {/* Article Title */}
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent leading-tight"
+              transition={{ delay: 0.2 }}
+              className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight"
             >
               {post?.title || 'Loading...'}
             </motion.h1>
 
-            {/* Blog Post Excerpt */}
+            {/* Article Excerpt */}
             {post?.excerpt && (
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+                transition={{ delay: 0.3 }}
+                className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed max-w-3xl"
               >
                 {post.excerpt}
               </motion.p>
             )}
 
-            {/* Blog Post Stats */}
+            {/* Article Meta Information */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400"
+            >
+              {/* Author */}
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>By {post?.author || 'Imteaj Sajid'}</span>
+              </div>
+
+              {/* Published Date */}
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>
+                  {post?.createdAt
+                    ? new Date(post.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })
+                    : 'Recently'
+                  }
+                </span>
+              </div>
+
+              {/* Read Time */}
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>{post?.readTime || '5'} min read</span>
+              </div>
+
+              {/* Views */}
+              <div className="flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                <span>{post?.views || 0} views</span>
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+              className="flex items-center gap-4 mt-8 pt-8 border-t border-gray-200 dark:border-gray-700"
             >
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">{post?.views || 0}</div>
-                <div className="text-gray-300 text-sm">Views</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400 mb-2">{likes || 0}</div>
-                <div className="text-gray-300 text-sm">Likes</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">{post?.readTime || '5'}</div>
-                <div className="text-gray-300 text-sm">Min Read</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-orange-400 mb-2">
-                  {post?.createdAt ? new Date(post.createdAt).getFullYear() : new Date().getFullYear()}
-                </div>
-                <div className="text-gray-300 text-sm">Published</div>
-              </div>
+              {/* Like Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleLike}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  isLiked
+                    ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                <span>{likes || 0}</span>
+              </motion.button>
+
+              {/* Bookmark Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleBookmark}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  isBookmarked
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                <span>Save</span>
+              </motion.button>
+
+              {/* Share Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Share</span>
+              </motion.button>
             </motion.div>
           </div>
         </motion.section>
