@@ -481,7 +481,8 @@
                                             >
                                                 <AnimatedText 
                                                     strings={[
-                                                        about?.title || 'Full Stack Developer',
+                                                        about?.title || 
+                                                        'Full Stack Developer',
                                                         'React Developer',
                                                         'UI/UX Enthusiast',
                                                         'Problem Solver'
@@ -642,10 +643,11 @@
                                                     src={about?.profileImage ? portfolioService.getFileView(about.profileImage) : "/React_portfolio/images/imteaj.png"}
                                                     alt={about?.name || "Profile"}
                                                     className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white dark:border-gray-800 relative z-10"
-                                                    whileHover={{ 
+                                                    whileHover={{
                                                         boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)"
                                                     }}
                                                     onError={(e) => {
+                                                        console.error('Failed to load profile image:', about?.profileImage);
                                                         e.target.src = "/React_portfolio/images/imteaj.png";
                                                     }}
                                                 />

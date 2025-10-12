@@ -4,15 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import toast, { Toaster } from 'react-hot-toast';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Heart, 
-  Share2, 
-  Bookmark, 
-  Copy, 
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
+  Share2,
+  Bookmark,
+  Copy,
   Check,
   User,
   Tag,
@@ -40,13 +40,16 @@ import {
   ChevronRight,
   Send,
   Reply,
-  MoreHorizontal
+  MoreHorizontal,
+  Database,
+  Terminal
 } from 'lucide-react';
 import portfolioService from '../../services/portfolioService';
 import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
 import CodeBlock from './CodeBlock';
 import BlogEngagementBar from './BlogEngagementBar';
 import EnhancedCommentSection from './EnhancedCommentSection';
+import SharedHeader from '../common/SharedHeader';
 
 // Enhanced Blog Content Component with Advanced Code Highlighting
 const EnhancedBlogContent = ({ content, isDarkMode, onCopyCode, copiedCode }) => {
@@ -510,6 +513,13 @@ const EnhancedBlogDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20">
+      {/* Shared Header */}
+      <SharedHeader
+        showBackButton={true}
+        backTo="/blog"
+        backLabel="Back to Blog"
+      />
+
       <Toaster />
 
       {/* Floating Tech Elements Background - matching BlogPage */}
@@ -577,79 +587,116 @@ const EnhancedBlogDetailPage = () => {
       </div>
 
       {/* Main Content */}
-      <div ref={contentRef} className="overflow-y-auto h-screen">
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 z-30"
+      <div ref={contentRef} className="overflow-y-auto h-screen pt-16">
+
+        {/* Modern Tech Hero Section */}
+        <motion.section
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, y: 60 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.6, ease: "easeOut" }
+            }
+          }}
+          className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white py-24 overflow-hidden"
         >
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <motion.button
-                whileHover={{ x: -2 }}
-                onClick={() => navigate('/blog')}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Back to Blog</span>
-              </motion.button>
-
-              <div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <Edit3 className="w-5 h-5" />
-                </motion.button>
-
-                <div className="relative group">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </motion.button>
-
-                  <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="p-2 space-y-1 min-w-[160px]">
-                      <button
-                        onClick={() => handleShare('twitter')}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      >
-                        <Twitter className="w-4 h-4" />
-                        Twitter
-                      </button>
-                      <button
-                        onClick={() => handleShare('linkedin')}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      >
-                        <Linkedin className="w-4 h-4" />
-                        LinkedIn
-                      </button>
-                      <button
-                        onClick={() => handleShare('facebook')}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      >
-                        <Facebook className="w-4 h-4" />
-                        Facebook
-                      </button>
-                      <button
-                        onClick={() => handleShare('copy')}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                      >
-                        <Link className="w-4 h-4" />
-                        Copy Link
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 opacity-40"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
           </div>
-        </motion.header>
+
+          <div className="relative max-w-7xl mx-auto px-6 text-center">
+            {/* Floating Tech Icons */}
+            <div className="absolute inset-0 overflow-hidden">
+              <motion.div
+                animate={{ y: [-20, 20, -20] }}
+                transition={{ duration: 6, repeat: Infinity }}
+                className="absolute top-20 left-20 text-blue-400/30"
+              >
+                <Code2 size={32} />
+              </motion.div>
+              <motion.div
+                animate={{ y: [20, -20, 20] }}
+                transition={{ duration: 8, repeat: Infinity, delay: 1 }}
+                className="absolute top-40 right-32 text-purple-400/30"
+              >
+                <Database size={28} />
+              </motion.div>
+              <motion.div
+                animate={{ y: [-15, 15, -15] }}
+                transition={{ duration: 7, repeat: Infinity, delay: 2 }}
+                className="absolute bottom-32 left-32 text-green-400/30"
+              >
+                <Terminal size={30} />
+              </motion.div>
+            </div>
+
+            {/* Blog Post Category Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-4"
+            >
+              <span className="inline-flex items-center px-4 py-2 bg-blue-500/20 rounded-full text-blue-300 text-sm font-medium border border-blue-400/30">
+                <BookOpen className="w-4 h-4 mr-2" />
+                {getCategoryName(post?.categoryId) || 'Article'}
+              </span>
+            </motion.div>
+
+            {/* Blog Post Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent leading-tight"
+            >
+              {post?.title || 'Loading...'}
+            </motion.h1>
+
+            {/* Blog Post Excerpt */}
+            {post?.excerpt && (
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+              >
+                {post.excerpt}
+              </motion.p>
+            )}
+
+            {/* Blog Post Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            >
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-400 mb-2">{post?.views || 0}</div>
+                <div className="text-gray-300 text-sm">Views</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-400 mb-2">{likes || 0}</div>
+                <div className="text-gray-300 text-sm">Likes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-400 mb-2">{post?.readTime || '5'}</div>
+                <div className="text-gray-300 text-sm">Min Read</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-orange-400 mb-2">
+                  {post?.createdAt ? new Date(post.createdAt).getFullYear() : new Date().getFullYear()}
+                </div>
+                <div className="text-gray-300 text-sm">Published</div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
 
         {/* Article Content */}
         <main className="max-w-6xl mx-auto px-6 py-12">

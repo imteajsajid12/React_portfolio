@@ -1,7 +1,8 @@
 'use client'
 
 import React, {useState} from 'react'
-import {ArrowRight, Calendar, ChevronDown, Code2, Github, Moon, Search, Sun, Tag, User} from 'lucide-react'
+import {ArrowRight, Calendar, ChevronDown, Search, Tag, User} from 'lucide-react'
+import SharedHeader from '../components/common/SharedHeader'
 
 const blogPosts = [
     {
@@ -54,62 +55,34 @@ const blogPosts = [
 const categories = ["All", "UI Design", "Color Theory", "Responsive Design", "Typography"]
 
 export default function DesignBlog() {
-    const [isDark, setIsDark] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState("All")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-    const toggleTheme = () => {
-        setIsDark(!isDark)
-    }
 
     const filteredPosts = selectedCategory === "All"
         ? blogPosts
         : blogPosts.filter(post => post.category === selectedCategory)
 
     return (
-        <div
-            className={`${isDark ? 'dark' : ''} min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300`}>
-            {/* Navigation */}
-            <nav
-                className="px-6 py-4 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
-                <div className="flex items-center space-x-8">
-                    <div className="flex items-center">
-                        <Code2 className="h-8 w-8 text-blue-600 dark:text-blue-400"/>
-                        <span className="ml-2 font-semibold text-gray-800 dark:text-white">DesignInsights</span>
-                    </div>
-                    <div className="relative hidden sm:block">
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            {/* Shared Header */}
+            <SharedHeader />
+
+            {/* Add top padding to account for fixed header */}
+            <div className="pt-16"></div>
+
+            {/* Search Section */}
+            <div className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                <div className="max-w-7xl mx-auto px-6 py-6">
+                    <div className="relative max-w-md mx-auto">
                         <input
                             type="search"
                             placeholder="Search articles..."
-                            className="pl-8 pr-4 py-1 w-64 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"/>
                     </div>
                 </div>
-                <div className="flex items-center space-x-6">
-                    <a href="#"
-                       className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Home</a>
-                    <a href="#"
-                       className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Categories</a>
-                    <a href="#"
-                       className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">About</a>
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        aria-label="Toggle theme"
-                    >
-                        {isDark ? (
-                            <Sun className="h-4 w-4 text-gray-600 dark:text-gray-300"/>
-                        ) : (
-                            <Moon className="h-4 w-4 text-gray-600 dark:text-gray-300"/>
-                        )}
-                    </button>
-                    <a href="https://github.com"
-                       className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">
-                        <Github className="h-5 w-5"/>
-                    </a>
-                </div>
-            </nav>
+            </div>
 
             {/* Hero Section */}
             <div

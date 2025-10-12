@@ -31,6 +31,7 @@ import {
 import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
 import portfolioService from '../../services/portfolioService';
 import BlogContent from './BlogContent';
+import SharedHeader from '../common/SharedHeader';
 
 const BlogPage = () => {
   const navigate = useNavigate();
@@ -212,6 +213,9 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20">
+      {/* Shared Header */}
+      <SharedHeader />
+
       {/* Floating Tech Elements Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-20 h-20 bg-blue-500/10 rounded-full animate-pulse"></div>
@@ -225,7 +229,7 @@ const BlogPage = () => {
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
-        className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white py-24 overflow-hidden"
+        className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white pt-32 pb-24 overflow-hidden"
       >
         <div className="absolute inset-0">
           <div className="absolute inset-0 opacity-40"></div>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ExternalLink, Github, Eye, Calendar, Star, Code } from 'lucide-react';
 import { ScrollAnimatedSection, StaggerContainer, StaggerItem } from '../ui/ScrollAnimations';
 import { AnimatedButton } from '../ui/AnimatedButton';
+import portfolioService from '../../services/portfolioService';
 
 const ProjectCard = ({ project, index, onView }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -24,17 +25,27 @@ const ProjectCard = ({ project, index, onView }) => {
                 <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
                     {project.image ? (
                         <motion.img
-                            src={project.image}
+                            src={portfolioService.getFileView(project.image)}
                             alt={project.title}
                             className="w-full h-full object-cover"
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.4 }}
+                            onError={(e) => {
+                                console.error('Failed to load project image:', project.image);
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                            }}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
                             <Code className="h-16 w-16 text-gray-400 dark:text-gray-600" />
                         </div>
                     )}
+
+                    {/* Fallback image container */}
+                    <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
+                        <Code className="h-16 w-16 text-gray-400 dark:text-gray-600" />
+                    </div>
                     
                     {/* Overlay */}
                     <motion.div

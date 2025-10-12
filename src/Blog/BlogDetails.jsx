@@ -2,20 +2,17 @@
 
 import React, {useState} from 'react'
 import {
-    ArrowLeft,
     Bookmark,
     Calendar,
     Facebook,
     Linkedin,
     MessageCircle,
-    Moon,
-    Sun,
     Tag,
     ThumbsUp,
     Twitter,
     User
 } from 'lucide-react'
-import Link from 'next/link'
+import SharedHeader from '../components/common/SharedHeader'
 
 const blogPost = {
     title: "The Importance of White Space in UI Design",
@@ -60,14 +57,9 @@ const blogPost = {
 }
 
 export default function BlogView() {
-    const [isDark, setIsDark] = useState(false)
     const [isBookmarked, setIsBookmarked] = useState(false)
     const [likes, setLikes] = useState(42)
     const [hasLiked, setHasLiked] = useState(false)
-
-    const toggleTheme = () => {
-        setIsDark(!isDark)
-    }
 
     const toggleBookmark = () => {
         setIsBookmarked(!isBookmarked)
@@ -84,29 +76,16 @@ export default function BlogView() {
     }
 
     return (
-        <div
-            className={`${isDark ? 'dark' : ''} min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300`}>
-            <nav className="bg-white dark:bg-gray-800 shadow-md">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex">
-                            <Link href="/blog" className="flex-shrink-0 flex items-center">
-                                <ArrowLeft className="h-6 w-6 text-gray-600 dark:text-gray-300"/>
-                                <span className="ml-2 text-gray-800 dark:text-white font-semibold">Back to Blog</span>
-                            </Link>
-                        </div>
-                        <div className="flex items-center">
-                            <button
-                                onClick={toggleTheme}
-                                className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-                                aria-label="Toggle theme"
-                            >
-                                {isDark ? <Sun className="h-5 w-5"/> : <Moon className="h-5 w-5"/>}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            {/* Shared Header with Back Button */}
+            <SharedHeader
+                showBackButton={true}
+                backTo="/blog"
+                backLabel="Back to Blog"
+            />
+
+            {/* Add top padding to account for fixed header */}
+            <div className="pt-16"></div>
 
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <article>
