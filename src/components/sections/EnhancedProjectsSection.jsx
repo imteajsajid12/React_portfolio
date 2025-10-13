@@ -1,11 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { ExternalLink, Github, Eye, Calendar, Star, Code } from 'lucide-react';
 import { ScrollAnimatedSection, StaggerContainer, StaggerItem } from '../ui/ScrollAnimations';
 import { AnimatedButton } from '../ui/AnimatedButton';
+import portfolioService from '../../services/portfolioService';
 
-const ProjectCard = ({ project, index, onView }) => {
+const ProjectCard = ({ project, onView }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [imageError, setImageError] = useState(false);
     
     return (
         <StaggerItem>
@@ -22,13 +25,17 @@ const ProjectCard = ({ project, index, onView }) => {
             >
                 {/* Project Image */}
                 <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-                    {project.image ? (
+                    {project.image && !imageError ? (
                         <motion.img
-                            src={project.image}
+                            src={portfolioService.getFileView(project.image)}
                             alt={project.title}
                             className="w-full h-full object-cover"
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.4 }}
+                            onError={() => {
+                                console.error('Failed to load project image:', project.image);
+                                setImageError(true);
+                            }}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
@@ -281,7 +288,6 @@ const EnhancedProjectsSection = ({ projects = [], loading = false, onProjectView
                             <ProjectCard
                                 key={project.$id || project.id || index}
                                 project={project}
-                                index={index}
                                 onView={onProjectView}
                             />
                         ))}
@@ -317,6 +323,52 @@ const EnhancedProjectsSection = ({ projects = [], loading = false, onProjectView
             </div>
         </ScrollAnimatedSection>
     );
+};
+
+// PropTypes for ProjectCard
+ProjectCard.propTypes = {
+    project: PropTypes.shape({
+        $id: PropTypes.string,
+        title: PropTypes.string.isRequired,
+        description: PropTypes.string,
+        shortDescription: PropTypes.string,
+        image: PropTypes.string,
+        technologies: PropTypes.arrayOf(PropTypes.string),
+        githubUrl: PropTypes.string,
+        demoUrl: PropTypes.string,
+        featured: PropTypes.bool,
+        category: PropTypes.string,
+        startDate: PropTypes.string,
+        views: PropTypes.number
+    }).isRequired,
+    onView: PropTypes.func
+};
+
+// PropTypes for ProjectFilter
+ProjectFilter.propTypes = {
+    categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+    activeCategory: PropTypes.string.isRequired,
+    onCategoryChange: PropTypes.func.isRequired
+};
+
+// PropTypes for EnhancedProjectsSection
+EnhancedProjectsSection.propTypes = {
+    projects: PropTypes.arrayOf(PropTypes.shape({
+        $id: PropTypes.string,
+        title: PropTypes.string.isRequired,
+        description: PropTypes.string,
+        shortDescription: PropTypes.string,
+        image: PropTypes.string,
+        technologies: PropTypes.arrayOf(PropTypes.string),
+        githubUrl: PropTypes.string,
+        demoUrl: PropTypes.string,
+        featured: PropTypes.bool,
+        category: PropTypes.string,
+        startDate: PropTypes.string,
+        views: PropTypes.number
+    })),
+    loading: PropTypes.bool,
+    onProjectView: PropTypes.func
 };
 
 export default EnhancedProjectsSection;
