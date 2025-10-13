@@ -5,12 +5,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
+    "build:prod": "vite build --mode production",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "deploy:appwrite": "npm run build:prod && npm run appwrite:deploy",
+    "appwrite:deploy": "appwrite deploy",
+    "appwrite:init": "appwrite init",
+    "test:build": "npm run build && npm run preview",
+    "clean": "rm -rf dist node_modules/.vite"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
@@ -66,6 +72,7 @@
     "globals": "^15.11.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
+    "terser": "^5.44.0",
     "vite": "^5.4.10"
   }
 }

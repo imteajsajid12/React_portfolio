@@ -1,0 +1,30 @@
+# Appwrite Configuration for Portfolio Deployment
+projectId: 673dca020027a68a026f
+projectName: demo_react
+
+# Static Website Configuration
+functions:
+  - name: portfolio-website
+    runtime: static
+    source: ./dist
+    entrypoint: index.html
+    
+# Environment Variables for Production
+environment:
+  VITE_APPWRITE_ENDPOINT: https://fra.cloud.appwrite.io/v1
+  VITE_APPWRITE_PROJECT_ID: 673dca020027a68a026f
+  VITE_APPWRITE_DATABASE_ID: 68b167ac00260b8be1b2
+  VITE_APPWRITE_STORAGE_BUCKET: 674958ca00169e907ea0
+
+# Build Configuration
+build:
+  commands:
+    - npm install
+    - npm run build:prod
+  outputDirectory: dist
+  
+# Routing Configuration for SPA
+routes:
+  - source: "/(.*)"
+    destination: "/index.html"
+    type: "rewrite"

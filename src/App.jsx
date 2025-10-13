@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth.jsx';
 import { AdminRoute } from './components/auth/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Portfolio Components
 import Portfolio from './portfolio/Portfolio';
@@ -30,11 +31,17 @@ import AdminPage from './pages/AdminPage';
 const SettingsManager = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings Manager</h1><p>Coming soon...</p></div>;
 
 function App() {
+  // Determine base path based on environment
+  const basename = import.meta.env.PROD && window.location.hostname.includes('github.io')
+    ? '/React_portfolio'
+    : '/';
+
   return (
-    <Router basename="/React_portfolio">
-      <AuthProvider>
-        <div className="App">
-          <Routes>
+    <ErrorBoundary>
+      <Router basename={basename}>
+        <AuthProvider>
+          <div className="App">
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Portfolio />} />
             <Route path="/blog" element={<BlogPage />} />
@@ -69,9 +76,10 @@ function App() {
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </div>
-      </AuthProvider>
-    </Router>
+          </div>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
