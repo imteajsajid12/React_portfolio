@@ -36,7 +36,7 @@ npm run test:build
 1. **Initialize Appwrite CLI**:
 
 ```bash
-npm run appwrite:init
+c
 ```
 
 2. **Deploy to Appwrite**:
