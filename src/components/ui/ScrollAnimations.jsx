@@ -1,18 +1,21 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
-export const ScrollAnimatedSection = ({ 
-    children, 
+export const ScrollAnimatedSection = ({
+    children,
     animation = "fadeInUp",
     delay = 0,
     duration = 0.6,
     className = "",
-    ...props 
+    ...props
 }) => {
     const { ref, inView } = useInView({
         threshold: 0.1,
         triggerOnce: true
     });
+
+    // Detect mobile for performance optimizations
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     const animations = {
         fadeInUp: {
@@ -43,11 +46,11 @@ export const ScrollAnimatedSection = ({
             className={className}
             initial={animations[animation].initial}
             animate={inView ? animations[animation].animate : animations[animation].initial}
-            transition={{ 
-                duration,
-                delay,
+            transition={{
+                duration: isMobile ? duration * 0.5 : duration, // 50% faster on mobile
+                delay: isMobile ? delay * 0.5 : delay, // Reduce delay on mobile
                 type: "spring",
-                stiffness: 100,
+                stiffness: isMobile ? 50 : 100, // Reduce stiffness on mobile
                 damping: 15
             }}
             {...props}
@@ -57,10 +60,10 @@ export const ScrollAnimatedSection = ({
     );
 };
 
-export const StaggerContainer = ({ 
-    children, 
+export const StaggerContainer = ({
+    children,
     staggerDelay = 0.1,
-    className = "" 
+    className = ""
 }) => {
     const { ref, inView } = useInView({
         threshold: 0.1,
@@ -91,6 +94,9 @@ export const StaggerContainer = ({
 };
 
 export const StaggerItem = ({ children, className = "" }) => {
+    // Detect mobile for performance optimizations
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     const item = {
         hidden: { opacity: 0, y: 20 },
         visible: {
@@ -98,7 +104,7 @@ export const StaggerItem = ({ children, className = "" }) => {
             y: 0,
             transition: {
                 type: "spring",
-                stiffness: 100,
+                stiffness: isMobile ? 50 : 100, // Reduce stiffness on mobile
                 damping: 15
             }
         }
@@ -115,10 +121,10 @@ export const StaggerItem = ({ children, className = "" }) => {
 };
 
 // Parallax component
-export const ParallaxSection = ({ 
-    children, 
-    speed = 0.5, 
-    className = "" 
+export const ParallaxSection = ({
+    children,
+    speed = 0.5,
+    className = ""
 }) => {
     return (
         <motion.div

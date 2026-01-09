@@ -27,9 +27,15 @@
     @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
 }
 
-/* Smooth scroll behavior */
+/* Smooth scroll behavior - disabled on mobile for performance */
 html {
     scroll-behavior: smooth;
+}
+
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: auto;
+    }
 }
 
 /* Custom animations */
@@ -122,6 +128,44 @@ html {
 
 .animate-fade-in-scale {
     animation: fade-in-scale 0.5s ease-out forwards;
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+    /* Reduce animation durations by 50% on mobile */
+    .animate-float {
+        animation-duration: 1.5s;
+    }
+    
+    .animate-pulse-glow {
+        animation-duration: 1s;
+    }
+    
+    .animate-gradient-shift {
+        animation-duration: 1.5s;
+    }
+    
+    .animate-text-shimmer {
+        animation-duration: 1s;
+    }
+    
+    .animate-bounce-in {
+        animation-duration: 0.3s;
+    }
+    
+    .animate-slide-up {
+        animation-duration: 0.3s;
+    }
+    
+    .animate-fade-in-scale {
+        animation-duration: 0.25s;
+    }
+    
+    /* Add will-change for frequently animated elements */
+    .hover-lift,
+    .card-interactive {
+        will-change: transform;
+    }
 }
 
 /* Glass morphism effects */

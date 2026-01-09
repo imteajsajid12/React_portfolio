@@ -3,7 +3,7 @@ import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 import PropTypes from 'prop-types';
 
-const ParticleBackground = ({ isDark = false, density = 80 }) => {
+const ParticleBackground = ({ isDark = false, density = 80, isMobile = false }) => {
     const particlesInit = useCallback(async (engine) => {
         await loadSlim(engine);
     }, []);
@@ -14,15 +14,15 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
                 value: "transparent",
             },
         },
-        fpsLimit: 120,
+        fpsLimit: isMobile ? 30 : 120, // Reduce FPS on mobile for better performance
         interactivity: {
             events: {
                 onClick: {
-                    enable: true,
+                    enable: !isMobile, // Disable click events on mobile
                     mode: "push",
                 },
                 onHover: {
-                    enable: true,
+                    enable: !isMobile, // Disable hover events on mobile
                     mode: "repulse",
                 },
                 resize: true,
@@ -44,7 +44,7 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
             links: {
                 color: isDark ? "#4f46e5" : "#7c3aed",
                 distance: 150,
-                enable: true,
+                enable: !isMobile, // Disable links on mobile to reduce canvas operations
                 opacity: isDark ? 0.2 : 0.15,
                 width: 1,
             },
@@ -55,7 +55,7 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
                     default: "bounce",
                 },
                 random: false,
-                speed: 0.8,
+                speed: isMobile ? 0.5 : 0.8, // Slower movement on mobile
                 straight: false,
             },
             number: {
@@ -68,7 +68,7 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
             opacity: {
                 value: isDark ? 0.4 : 0.3,
                 animation: {
-                    enable: true,
+                    enable: !isMobile, // Disable opacity animation on mobile
                     speed: 0.5,
                     minimumValue: 0.1,
                 },
@@ -79,7 +79,7 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
             size: {
                 value: { min: 1, max: 3 },
                 animation: {
-                    enable: true,
+                    enable: !isMobile, // Disable size animation on mobile
                     speed: 2,
                     minimumValue: 0.5,
                 },
@@ -100,7 +100,8 @@ const ParticleBackground = ({ isDark = false, density = 80 }) => {
 
 ParticleBackground.propTypes = {
     isDark: PropTypes.bool,
-    density: PropTypes.number
+    density: PropTypes.number,
+    isMobile: PropTypes.bool
 };
 
 export default ParticleBackground;
