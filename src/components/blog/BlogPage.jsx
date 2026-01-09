@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Search, 
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Search,
   ArrowRight,
   BookOpen,
   Heart,
@@ -31,7 +31,7 @@ import {
 import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
 import portfolioService from '../../services/portfolioService';
 import BlogContent from './BlogContent';
-import SharedHeader from '../common/SharedHeader';
+import ModernNavbar from '../ui/ModernNavbar';
 
 const BlogPage = () => {
   const navigate = useNavigate();
@@ -40,24 +40,24 @@ const BlogPage = () => {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
-  
+
   const { posts, loading: postsLoading } = useBlogPosts(selectedCategory, 'published');
   const { categories, loading: categoriesLoading } = useBlogCategories();
 
   // Filter and sort posts
   useEffect(() => {
     if (!posts) return;
-    
+
     let filtered = posts;
-    
+
     if (searchTerm) {
-      filtered = posts.filter(post => 
+      filtered = posts.filter(post =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
-    
+
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case 'newest':
@@ -72,7 +72,7 @@ const BlogPage = () => {
           return 0;
       }
     });
-    
+
     setFilteredPosts(filtered);
   }, [posts, searchTerm, sortBy]);
 
@@ -95,7 +95,7 @@ const BlogPage = () => {
     const now = new Date();
     const postDate = new Date(dateString);
     const diffInSeconds = Math.floor((now - postDate) / 1000);
-    
+
     if (diffInSeconds < 60) return 'Just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
@@ -122,7 +122,7 @@ const BlogPage = () => {
     } catch (error) {
       console.error('Failed to increment view count:', error);
     }
-    
+
     // Navigate to blog detail page using the post slug
     navigate(`/blog/${post.slug || post.$id}`);
   };
@@ -159,8 +159,8 @@ const BlogPage = () => {
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" }
     }
@@ -178,8 +178,8 @@ const BlogPage = () => {
 
   const itemFadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: { duration: 0.5 }
     }
@@ -193,7 +193,7 @@ const BlogPage = () => {
             <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded w-64 mx-auto mb-4 animate-pulse"></div>
             <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-96 mx-auto animate-pulse"></div>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, index) => (
               <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden animate-pulse">
@@ -212,9 +212,9 @@ const BlogPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20">
-      {/* Shared Header */}
-      <SharedHeader />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20 overflow-x-hidden">
+      {/* Modern Navbar */}
+      <ModernNavbar variant="blog" showScrollLinks={false} />
 
       {/* Floating Tech Elements Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -269,22 +269,22 @@ const BlogPage = () => {
             </span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             variants={fadeInUp}
             className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent"
           >
             Code. Create. <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">Innovate.</span>
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             variants={fadeInUp}
             className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
           >
             Exploring the latest in technology, sharing development insights, and building the future one line of code at a time
           </motion.p>
-          
+
           {/* Enhanced Search Bar */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="max-w-2xl mx-auto relative group"
           >
@@ -308,7 +308,7 @@ const BlogPage = () => {
           </motion.div>
 
           {/* Tech Stats */}
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
           >
@@ -348,11 +348,10 @@ const BlogPage = () => {
                 onClick={() => setSelectedCategory(null)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center px-4 py-2 rounded-xl transition-all duration-200 ${
-                  selectedCategory === null
+                className={`flex items-center px-4 py-2 rounded-xl transition-all duration-200 ${selectedCategory === null
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+                  }`}
               >
                 <Grid3X3 className="w-4 h-4 mr-2" />
                 All
@@ -365,11 +364,10 @@ const BlogPage = () => {
                     onClick={() => setSelectedCategory(category.$id)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`flex items-center px-4 py-2 rounded-xl transition-all duration-200 ${
-                      selectedCategory === category.$id
+                    className={`flex items-center px-4 py-2 rounded-xl transition-all duration-200 ${selectedCategory === category.$id
                         ? 'text-white shadow-lg'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
+                      }`}
                     style={{
                       backgroundColor: selectedCategory === category.$id ? category.color : undefined,
                       boxShadow: selectedCategory === category.$id ? `0 8px 20px ${category.color}40` : undefined
@@ -449,24 +447,24 @@ const BlogPage = () => {
                               <span className="px-3 py-1 bg-yellow-500 text-white text-sm font-medium rounded-full">
                                 Featured
                               </span>
-                              <span 
+                              <span
                                 className="px-3 py-1 text-white text-sm rounded-full"
                                 style={{ backgroundColor: getCategoryColor(post.categoryId) }}
                               >
                                 {getCategoryName(post.categoryId)}
                               </span>
                             </div>
-                            
+
                             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {post.title}
                             </h3>
-                            
+
                             {post.excerpt && (
                               <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
                                 {post.excerpt}
                               </p>
                             )}
-                            
+
                             <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-6">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-4 w-4" />
@@ -481,7 +479,7 @@ const BlogPage = () => {
                                 <span>{post.views || 0} views</span>
                               </div>
                             </div>
-                            
+
                             <motion.button
                               whileHover={{ x: 5 }}
                               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
@@ -490,7 +488,7 @@ const BlogPage = () => {
                               <ArrowRight className="h-4 w-4 ml-2" />
                             </motion.button>
                           </div>
-                          
+
                           {post.featuredImage && (
                             <div className="relative">
                               <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-xl"></div>
@@ -512,7 +510,7 @@ const BlogPage = () => {
               {/* Regular Posts Grid/List */}
               <motion.div
                 variants={staggerContainer}
-                className={viewMode === 'grid' 
+                className={viewMode === 'grid'
                   ? "grid md:grid-cols-2 lg:grid-cols-3 gap-8"
                   : "space-y-6"
                 }
@@ -523,11 +521,10 @@ const BlogPage = () => {
                     variants={itemFadeIn}
                     whileHover={{ y: -8 }}
                     onClick={() => handlePostClick(post)}
-                    className={`group cursor-pointer transition-all duration-300 ${
-                      viewMode === 'grid' 
+                    className={`group cursor-pointer transition-all duration-300 ${viewMode === 'grid'
                         ? 'bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden'
                         : 'bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 p-6'
-                    }`}
+                      }`}
                   >
                     {viewMode === 'grid' ? (
                       <div className="h-full">
@@ -540,16 +537,16 @@ const BlogPage = () => {
                               onError={(e) => e.target.style.display = 'none'}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
+
                             <div className="absolute top-4 left-4">
-                              <span 
+                              <span
                                 className="px-3 py-1 text-xs font-medium text-white rounded-full backdrop-blur-sm"
                                 style={{ backgroundColor: getCategoryColor(post.categoryId) }}
                               >
                                 {getCategoryName(post.categoryId)}
                               </span>
                             </div>
-                            
+
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
@@ -593,7 +590,7 @@ const BlogPage = () => {
                                 <span>12</span>
                               </div>
                             </div>
-                            
+
                             <motion.button
                               whileHover={{ x: 3 }}
                               className="flex items-center text-blue-600 dark:text-blue-400 font-medium text-sm"
@@ -617,10 +614,10 @@ const BlogPage = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                           </div>
                         )}
-                        
+
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-3">
-                            <span 
+                            <span
                               className="px-3 py-1 text-xs font-medium text-white rounded-full"
                               style={{ backgroundColor: getCategoryColor(post.categoryId) }}
                             >
@@ -630,17 +627,17 @@ const BlogPage = () => {
                               <Bookmark className="w-4 h-4" />
                             </button>
                           </div>
-                          
+
                           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                             {post.title}
                           </h3>
-                          
+
                           {post.excerpt && (
                             <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                               {post.excerpt}
                             </p>
                           )}
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                               <div className="flex items-center gap-1">
@@ -656,7 +653,7 @@ const BlogPage = () => {
                                 <span>{post.views || 0}</span>
                               </div>
                             </div>
-                            
+
                             <motion.button
                               whileHover={{ x: 3 }}
                               className="flex items-center text-blue-600 dark:text-blue-400 font-medium"
@@ -680,18 +677,18 @@ const BlogPage = () => {
                   <Code2 className="h-16 w-16 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
-              
+
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                 {searchTerm ? 'No matching articles found' : 'No articles published yet'}
               </h3>
-              
+
               <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                {searchTerm 
+                {searchTerm
                   ? `We couldn't find any articles matching "${searchTerm}". Try adjusting your search or browse categories.`
                   : 'Stay tuned! Amazing tech content is coming soon. Follow us for updates.'
                 }
               </p>
-              
+
               {searchTerm ? (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -733,7 +730,7 @@ const BlogPage = () => {
         className="py-20 bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden"
       >
         <div className="absolute inset-0 opacity-30"></div>
-        
+
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <motion.div variants={fadeInUp} className="mb-6">
             <div className="inline-flex items-center px-4 py-2 bg-blue-500/20 rounded-full text-blue-300 text-sm font-medium border border-blue-400/30 mb-6">
@@ -748,14 +745,14 @@ const BlogPage = () => {
           >
             Get the Latest Tech Insights
           </motion.h2>
-          
+
           <motion.p
             variants={fadeInUp}
             className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto"
           >
             Join thousands of developers and tech enthusiasts. Get weekly updates on the latest trends, tutorials, and industry insights.
           </motion.p>
-          
+
           <motion.form
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto"
@@ -776,7 +773,7 @@ const BlogPage = () => {
               Subscribe
             </motion.button>
           </motion.form>
-          
+
           <motion.div
             variants={fadeInUp}
             className="flex justify-center gap-6 mt-12"
