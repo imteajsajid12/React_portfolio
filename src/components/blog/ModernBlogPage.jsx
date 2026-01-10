@@ -21,25 +21,21 @@ import {
   List,
   Bookmark,
   ExternalLink,
-  Github,
-  Linkedin,
-  Twitter,
   Sparkles,
-  Layers,
-  MonitorSpeaker,
   Filter,
   ChevronDown,
   ChevronUp,
   X,
-  Mail,
-  Send,
-  Check
+  Menu,
+  X as CloseIcon,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
-import { useBlogPosts, useBlogCategories, useAbout } from '../../hooks/usePortfolio';
+import { useBlogPosts, useBlogCategories } from '../../hooks/usePortfolio';
 import portfolioService from '../../services/portfolioService';
 import ModernNavbar from '../ui/ModernNavbar';
 
-const BlogPage = () => {
+const ModernBlogPage = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,12 +43,12 @@ const BlogPage = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState('idle'); // idle, loading, success, error
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(9);
 
   const { posts, loading: postsLoading } = useBlogPosts(selectedCategory, 'published');
   const { categories, loading: categoriesLoading } = useBlogCategories();
-  const { about } = useAbout();
 
   // Filter and sort posts
   useEffect(() => {
@@ -84,7 +80,14 @@ const BlogPage = () => {
     });
 
     setFilteredPosts(filtered);
-  }, [posts, searchTerm, sortBy]);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [posts, searchTerm, sortBy, selectedCategory]);
+
+  // Pagination
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -137,66 +140,22 @@ const BlogPage = () => {
     navigate(`/blog/${post.slug || post.$id}`);
   };
 
-  const handleNewsletterSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newsletterEmail)) {
-      setNewsletterStatus('error');
-      setTimeout(() => setNewsletterStatus('idle'), 3000);
-      return;
-    }
-
-    setNewsletterStatus('loading');
-
-    try {
-      // Simulate API call - Replace with actual newsletter service integration
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Here you would typically call your newsletter service API
-      // await newsletterService.subscribe(newsletterEmail);
-      
-      setNewsletterStatus('success');
-      setNewsletterEmail('');
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setNewsletterStatus('idle'), 5000);
-    } catch (error) {
-      console.error('Newsletter subscription failed:', error);
-      setNewsletterStatus('error');
-      setTimeout(() => setNewsletterStatus('idle'), 3000);
-    }
-  };
-
   const getCategoryIcon = (categoryName) => {
     const iconMap = {
       'Frontend': Globe,
       'Backend': Database,
       'DevOps': Terminal,
-      'Mobile': MonitorSpeaker,
+      'Mobile': Terminal,
       'AI/ML': Cpu,
       'Web Development': Code2,
       'Programming': Code2,
       'Technology': Zap,
       'Tutorial': BookOpen,
       'News': TrendingUp,
-      'Tools': Layers,
+      'Tools': Code2,
       'default': Code2
     };
     return iconMap[categoryName] || iconMap.default;
-  };
-
-  const getTechGradient = (index) => {
-    const gradients = [
-      'from-blue-500 to-cyan-500',
-      'from-purple-500 to-pink-500',
-      'from-green-500 to-teal-500',
-      'from-orange-500 to-red-500',
-      'from-indigo-500 to-blue-500',
-      'from-yellow-500 to-orange-500',
-    ];
-    return gradients[index % gradients.length];
   };
 
   const fadeInUp = {
@@ -229,22 +188,22 @@ const BlogPage = () => {
 
   if (postsLoading || categoriesLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
         <ModernNavbar variant="blog" showScrollLinks={false} />
-        <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center mb-16">
-            <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded w-64 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-96 mx-auto animate-pulse"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-64 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-96 mx-auto animate-pulse"></div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, index) => (
               <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden animate-pulse">
-                <div className="h-48 bg-gray-300 dark:bg-gray-700"></div>
+                <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
                 <div className="p-6">
-                  <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
-                  <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
                 </div>
               </div>
             ))}
@@ -255,7 +214,7 @@ const BlogPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-indigo-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950/20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <ModernNavbar variant="blog" showScrollLinks={false} blogPostTitle="Blog" />
 
       {/* Hero Section */}
@@ -263,31 +222,32 @@ const BlogPage = () => {
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
-        className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white pt-32 pb-24 overflow-hidden"
+        className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white pt-32 pb-24 overflow-hidden"
         aria-label="Blog Hero Section"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-purple-600/30 to-indigo-700/30"></div>
 
-        <div className="relative max-w-7xl mx-auto px-6 text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div variants={fadeInUp} className="mb-6">
-            <span className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-blue-300 text-sm font-medium border border-white/20" aria-label="Blog category">
-              <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
-              Tech Blog & Insights
+            <span className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium border border-white/30">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Tech Insights & Tutorials
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeInUp}
-            className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent"
+            className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent"
             tabIndex={0}
           >
             Discover the Future of <br />
-            <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">Technology</span>
+            <span className="text-transparent bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text">Technology</span>
           </motion.h1>
 
           <motion.p
             variants={fadeInUp}
-            className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-lg md:text-xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed"
             tabIndex={0}
           >
             Explore cutting-edge insights, tutorials, and industry trends from the world of technology and development.
@@ -302,13 +262,13 @@ const BlogPage = () => {
           >
             <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-1">
               <div className="flex items-center">
-                <Search className="absolute left-6 text-gray-300 h-5 w-5 z-10" aria-hidden="true" />
+                <Search className="absolute left-6 text-white/60 h-5 w-5 z-10" />
                 <input
                   type="search"
                   placeholder="Search articles, tutorials, insights..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-14 pr-4 py-4 bg-transparent text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                  className="w-full pl-14 pr-4 py-4 bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 text-lg"
                   aria-label="Search articles"
                 />
               </div>
@@ -323,20 +283,20 @@ const BlogPage = () => {
             aria-label="Blog statistics"
           >
             <div className="text-center" role="listitem">
-              <div className="text-3xl font-bold text-blue-400 mb-2">{posts?.length || 0}</div>
-              <div className="text-gray-300 text-sm">Articles</div>
+              <div className="text-3xl font-bold text-cyan-300 mb-2">{posts?.length || 0}</div>
+              <div className="text-white/70 text-sm">Articles</div>
             </div>
             <div className="text-center" role="listitem">
-              <div className="text-3xl font-bold text-purple-400 mb-2">{categories?.length || 0}</div>
-              <div className="text-gray-300 text-sm">Categories</div>
+              <div className="text-3xl font-bold text-purple-300 mb-2">{categories?.length || 0}</div>
+              <div className="text-white/70 text-sm">Categories</div>
             </div>
             <div className="text-center" role="listitem">
-              <div className="text-3xl font-bold text-green-400 mb-2">50K+</div>
-              <div className="text-gray-300 text-sm">Readers</div>
+              <div className="text-3xl font-bold text-green-300 mb-2">50K+</div>
+              <div className="text-white/70 text-sm">Readers</div>
             </div>
             <div className="text-center" role="listitem">
-              <div className="text-3xl font-bold text-orange-400 mb-2">24/7</div>
-              <div className="text-gray-300 text-sm">Updates</div>
+              <div className="text-3xl font-bold text-orange-300 mb-2">24/7</div>
+              <div className="text-white/70 text-sm">Updates</div>
             </div>
           </motion.div>
         </div>
@@ -348,11 +308,11 @@ const BlogPage = () => {
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
-        className="py-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-40"
+        className="py-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-40"
         aria-label="Blog filters and sorting options"
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Mobile Filters Button */}
             <button
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
@@ -360,14 +320,14 @@ const BlogPage = () => {
               aria-expanded={mobileFiltersOpen}
               aria-controls="filters-container"
             >
-              <Filter className="w-4 h-4" aria-hidden="true" />
+              <Filter className="w-4 h-4" />
               Filters
-              {mobileFiltersOpen ? <ChevronUp className="w-4 h-4" aria-hidden="true" /> : <ChevronDown className="w-4 h-4" aria-hidden="true" />}
+              {mobileFiltersOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
             <div
               id="filters-container"
-              className={`flex flex-col lg:flex-row lg:items-center gap-6 w-full ${mobileFiltersOpen ? 'block' : 'hidden lg:flex'}`}
+              className={`flex flex-col lg:flex-row lg:items-center gap-4 w-full ${mobileFiltersOpen ? 'block' : 'hidden lg:flex'}`}
               role="region"
               aria-labelledby="filters-heading"
             >
@@ -379,16 +339,15 @@ const BlogPage = () => {
                   onClick={() => setSelectedCategory(null)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-4 py-2 rounded-full transition-all duration-200 ${
-                    selectedCategory === null
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  className={`px-4 py-2 rounded-full transition-all duration-200 ${selectedCategory === null
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                   aria-pressed={selectedCategory === null}
                 >
                   All
                 </motion.button>
-                {categories.slice(0, 5).map((category) => {
+                {categories.slice(0, 6).map((category) => {
                   const IconComponent = getCategoryIcon(category.name);
                   return (
                     <motion.button
@@ -396,10 +355,9 @@ const BlogPage = () => {
                       onClick={() => setSelectedCategory(category.$id)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${
-                        selectedCategory === category.$id
-                          ? 'text-white shadow-lg'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${selectedCategory === category.$id
+                        ? 'text-white shadow-lg'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                       style={{
                         backgroundColor: selectedCategory === category.$id ? category.color : undefined,
@@ -407,7 +365,7 @@ const BlogPage = () => {
                       }}
                       aria-pressed={selectedCategory === category.$id}
                     >
-                      <IconComponent className="w-4 h-4" aria-hidden="true" />
+                      <IconComponent className="w-4 h-4" />
                       {category.name}
                     </motion.button>
                   );
@@ -430,7 +388,7 @@ const BlogPage = () => {
                     <option value="popular">Popular</option>
                     <option value="featured">Featured</option>
                   </select>
-                  <TrendingUp className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" aria-hidden="true" />
+                  <TrendingUp className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 </div>
 
                 <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1" role="radiogroup" aria-label="View mode">
@@ -461,7 +419,7 @@ const BlogPage = () => {
                 className="lg:hidden absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full"
                 aria-label="Close filters"
               >
-                <X className="w-4 h-4" aria-hidden="true" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -477,11 +435,11 @@ const BlogPage = () => {
         className="py-16"
         aria-label="Blog posts content"
       >
-        <div className="max-w-7xl mx-auto px-6">
-          {filteredPosts.length > 0 ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {currentPosts.length > 0 ? (
             <div className="space-y-12">
               {/* Featured Post */}
-              {filteredPosts.filter(post => post.featured).slice(0, 1).map((post, index) => (
+              {currentPosts.filter(post => post.featured).slice(0, 1).map((post, index) => (
                 <motion.div
                   key={post.$id}
                   variants={itemFadeIn}
@@ -502,7 +460,7 @@ const BlogPage = () => {
                       <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                         <div>
                           <div className="flex items-center gap-3 mb-4">
-                            <span className="px-3 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full" aria-label="Featured article">
+                            <span className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-medium rounded-full" aria-label="Featured article">
                               Featured
                             </span>
                             <span
@@ -526,15 +484,15 @@ const BlogPage = () => {
 
                           <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400 mb-6">
                             <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" aria-hidden="true" />
+                              <Calendar className="h-4 w-4" />
                               <span>{formatTimeAgo(post.publishedAt || post.$createdAt)}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" aria-hidden="true" />
+                              <Clock className="h-4 w-4" />
                               <span>{post.readTime || calculateReadingTime(post.content)} min read</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Eye className="h-4 w-4" aria-hidden="true" />
+                              <Eye className="h-4 w-4" />
                               <span>{post.views || 0} views</span>
                             </div>
                           </div>
@@ -546,7 +504,7 @@ const BlogPage = () => {
                             aria-label={`Read article: ${post.title}`}
                           >
                             Read Full Article
-                            <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
+                            <ArrowRight className="h-4 w-4 ml-2" />
                           </motion.button>
                         </div>
 
@@ -576,16 +534,16 @@ const BlogPage = () => {
                 role="feed"
                 aria-label="Blog articles"
               >
-                {filteredPosts.filter(post => !post.featured).map((post) => (
+                {currentPosts.filter(post => !post.featured).map((post) => (
                   <motion.article
                     key={post.$id}
                     variants={itemFadeIn}
                     whileHover={{ y: -4 }}
                     onClick={() => handlePostClick(post)}
                     className={`group cursor-pointer transition-all duration-300 ${viewMode === 'grid'
-                        ? 'bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden'
-                        : 'bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-700 p-6'
-                      }`}
+                      ? 'bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden'
+                      : 'bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-700 p-6'
+                    }`}
                     role="article"
                     aria-labelledby={`post-title-${post.$id}`}
                     tabIndex={0}
@@ -623,11 +581,11 @@ const BlogPage = () => {
                         <div className="p-6 flex-1 flex flex-col">
                           <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
                             <div className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" aria-hidden="true" />
+                              <Calendar className="h-4 w-4" />
                               <span>{formatDate(post.publishedAt || post.$createdAt)}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" aria-hidden="true" />
+                              <Clock className="h-4 w-4" />
                               <span>{post.readTime || calculateReadingTime(post.content)} min</span>
                             </div>
                           </div>
@@ -645,11 +603,11 @@ const BlogPage = () => {
                           <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                               <div className="flex items-center gap-1">
-                                <Eye className="h-4 w-4" aria-hidden="true" />
+                                <Eye className="h-4 w-4" />
                                 <span>{post.views || 0}</span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <Heart className="h-4 w-4" aria-hidden="true" />
+                                <Heart className="h-4 w-4" />
                                 <span>12</span>
                               </div>
                             </div>
@@ -660,7 +618,7 @@ const BlogPage = () => {
                               aria-label={`Read article: ${post.title}`}
                             >
                               Read More
-                              <ArrowRight className="h-4 w-4 ml-1" aria-hidden="true" />
+                              <ArrowRight className="h-4 w-4 ml-1" />
                             </motion.button>
                           </div>
                         </div>
@@ -702,15 +660,15 @@ const BlogPage = () => {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                               <div className="flex items-center gap-1">
-                                <Calendar className="h-4 w-4" aria-hidden="true" />
+                                <Calendar className="h-4 w-4" />
                                 <span>{formatDate(post.publishedAt || post.$createdAt)}</span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <Clock className="h-4 w-4" aria-hidden="true" />
+                                <Clock className="h-4 w-4" />
                                 <span>{post.readTime || calculateReadingTime(post.content)} min</span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <Eye className="h-4 w-4" aria-hidden="true" />
+                                <Eye className="h-4 w-4" />
                                 <span>{post.views || 0}</span>
                               </div>
                             </div>
@@ -721,7 +679,7 @@ const BlogPage = () => {
                               aria-label={`Read article: ${post.title}`}
                             >
                               Read Article
-                              <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
+                              <ExternalLink className="h-4 w-4 ml-2" />
                             </motion.button>
                           </div>
                         </div>
@@ -730,13 +688,60 @@ const BlogPage = () => {
                   </motion.article>
                 ))}
               </motion.div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-12">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`p-2 rounded-lg ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`w-10 h-10 rounded-lg ${currentPage === pageNum ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                        aria-label={`Go to page ${pageNum}`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`p-2 rounded-lg ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <motion.div variants={fadeInUp} className="text-center py-20">
               <div className="relative inline-block mb-6">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-20"></div>
                 <div className="relative bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 p-6 rounded-full">
-                  <BookOpen className="h-16 w-16 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                  <BookOpen className="h-16 w-16 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
 
@@ -766,209 +771,8 @@ const BlogPage = () => {
           )}
         </div>
       </motion.section>
-
-      {/* Newsletter Section - Modern Design */}
-      <motion.section
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="relative py-24 overflow-hidden"
-      >
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
-          {/* Animated gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse"></div>
-          
-          {/* Mesh gradient effect */}
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-            <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="relative max-w-4xl mx-auto px-6 text-center z-10">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-sm font-medium mb-8"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Stay Updated</span>
-          </motion.div>
-
-          {/* Heading */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight"
-          >
-            Get the Latest Tech Insights
-          </motion.h2>
-
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="text-lg md:text-xl text-gray-200 mb-12 max-w-2xl mx-auto leading-relaxed"
-          >
-            Join thousands of developers and tech enthusiasts. Get weekly updates on the latest trends, tutorials, and industry insights.
-          </motion.p>
-
-          {/* Newsletter Form */}
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            onSubmit={handleNewsletterSubmit}
-            className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-10"
-          >
-            <div className="flex-1 relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
-              <input
-                type="email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Enter your email address"
-                required
-                disabled={newsletterStatus === 'loading'}
-                className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Email address for newsletter subscription"
-              />
-            </div>
-            
-            <motion.button
-              whileHover={{ scale: newsletterStatus === 'loading' ? 1 : 1.05 }}
-              whileTap={{ scale: newsletterStatus === 'loading' ? 1 : 0.95 }}
-              type="submit"
-              disabled={newsletterStatus === 'loading'}
-              className={`px-8 py-4 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 min-w-[140px] ${
-                newsletterStatus === 'success'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : newsletterStatus === 'error'
-                  ? 'bg-red-600 hover:bg-red-700'
-                  : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-              } text-white shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed`}
-              aria-label="Subscribe to newsletter"
-            >
-              {newsletterStatus === 'loading' ? (
-                <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                  />
-                  <span>Subscribing...</span>
-                </>
-              ) : newsletterStatus === 'success' ? (
-                <>
-                  <Check className="w-5 h-5" />
-                  <span>Subscribed!</span>
-                </>
-              ) : newsletterStatus === 'error' ? (
-                <>
-                  <X className="w-5 h-5" />
-                  <span>Try Again</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  <span>Subscribe</span>
-                </>
-              )}
-            </motion.button>
-          </motion.form>
-
-          {/* Status Messages */}
-          <AnimatePresence>
-            {newsletterStatus === 'success' && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="text-green-300 text-sm mb-8"
-              >
-                🎉 Thank you for subscribing! Check your inbox for confirmation.
-              </motion.p>
-            )}
-            {newsletterStatus === 'error' && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="text-red-300 text-sm mb-8"
-              >
-                ⚠️ Please enter a valid email address.
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          {/* Social Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className="flex items-center justify-center gap-4"
-          >
-            {about?.socialLinks?.github && (
-              <motion.a
-                whileHover={{ scale: 1.1, y: -3 }}
-                whileTap={{ scale: 0.9 }}
-                href={about.socialLinks.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 group"
-                aria-label="Follow on GitHub"
-              >
-                <Github className="w-6 h-6 text-white group-hover:text-gray-200 transition-colors" />
-              </motion.a>
-            )}
-            
-            {about?.socialLinks?.twitter && (
-              <motion.a
-                whileHover={{ scale: 1.1, y: -3 }}
-                whileTap={{ scale: 0.9 }}
-                href={about.socialLinks.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 group"
-                aria-label="Follow on Twitter"
-              >
-                <Twitter className="w-6 h-6 text-white group-hover:text-blue-300 transition-colors" />
-              </motion.a>
-            )}
-            
-            {about?.socialLinks?.linkedin && (
-              <motion.a
-                whileHover={{ scale: 1.1, y: -3 }}
-                whileTap={{ scale: 0.9 }}
-                href={about.socialLinks.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 group"
-                aria-label="Follow on LinkedIn"
-              >
-                <Linkedin className="w-6 h-6 text-white group-hover:text-blue-400 transition-colors" />
-              </motion.a>
-            )}
-          </motion.div>
-        </div>
-      </motion.section>
-
-
     </div>
   );
 };
 
-export default BlogPage;
+export default ModernBlogPage;
