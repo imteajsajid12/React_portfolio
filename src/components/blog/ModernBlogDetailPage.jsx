@@ -69,21 +69,21 @@ const ModernCodeBlock = ({ code, language, isDarkMode, onCopy, isCopied }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="my-8 group relative max-w-full"
+      className="my-6 sm:my-8 group relative w-full overflow-hidden"
     >
       {/* Code Header */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-3 sm:px-6 py-3 rounded-t-2xl border border-gray-700 dark:border-gray-600 overflow-x-auto">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
+      <div className="flex items-center justify-between bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-3 sm:px-6 py-3 rounded-t-xl sm:rounded-t-2xl border border-gray-700 dark:border-gray-600">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink overflow-hidden">
           {/* Traffic Lights */}
-          <div className="flex gap-2">
+          <div className="hidden sm:flex gap-2 flex-shrink-0">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
           
           {/* Language Badge */}
-          <div className="flex items-center gap-2 px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full">
-            <FileCode className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-white" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex-shrink-0">
+            <FileCode className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-white flex-shrink-0" />
             <span className="text-xs font-bold text-white uppercase tracking-wider whitespace-nowrap">
               {language || 'code'}
             </span>
@@ -91,16 +91,16 @@ const ModernCodeBlock = ({ code, language, isDarkMode, onCopy, isCopied }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
           {shouldCollapse && (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
             >
               {isExpanded ? <Minimize className="w-3 h-3" /> : <Maximize className="w-3 h-3" />}
-              {isExpanded ? 'Collapse' : 'Expand'}
+              <span className="hidden md:inline">{isExpanded ? 'Collapse' : 'Expand'}</span>
             </motion.button>
           )}
           
@@ -108,7 +108,7 @@ const ModernCodeBlock = ({ code, language, isDarkMode, onCopy, isCopied }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onCopy}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-xs rounded-lg transition-all duration-200 flex-shrink-0 ${
               isCopied
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
@@ -130,27 +130,37 @@ const ModernCodeBlock = ({ code, language, isDarkMode, onCopy, isCopied }) => {
       </div>
 
       {/* Code Content */}
-      <div className={`relative overflow-hidden rounded-b-2xl border-x border-b border-gray-700 dark:border-gray-600 ${
+      <div className={`relative overflow-x-auto rounded-b-xl sm:rounded-b-2xl border-x border-b border-gray-700 dark:border-gray-600 ${
         !isExpanded && shouldCollapse ? 'max-h-96' : ''
       }`}>
         <SyntaxHighlighter
           language={language || 'text'}
           style={isDarkMode ? oneDark : oneLight}
           showLineNumbers={true}
-          wrapLines={true}
+          wrapLines={false}
+          wrapLongLines={false}
           customStyle={{
             margin: 0,
             borderRadius: 0,
             background: isDarkMode ? '#1a1b26' : '#fafafa',
-            fontSize: '0.875rem',
-            padding: '1.5rem',
+            fontSize: '0.8125rem',
+            padding: '1rem',
             lineHeight: '1.6',
+            maxWidth: '100%',
+            overflowX: 'auto',
           }}
           lineNumberStyle={{
-            minWidth: '3em',
-            paddingRight: '1em',
+            minWidth: '2.5em',
+            paddingRight: '0.75em',
             color: isDarkMode ? '#565f89' : '#9ca3af',
             userSelect: 'none',
+            fontSize: '0.75rem',
+          }}
+          codeTagProps={{
+            style: {
+              fontSize: '0.8125rem',
+              fontFamily: "'Fira Code', 'Monaco', 'Courier New', monospace",
+            }
           }}
         >
           {code}
@@ -163,7 +173,7 @@ const ModernCodeBlock = ({ code, language, isDarkMode, onCopy, isCopied }) => {
       </div>
 
       {/* Line Counter */}
-      <div className="absolute top-3 right-40 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="hidden lg:block absolute top-3 right-40 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
         {lines.length} {lines.length === 1 ? 'line' : 'lines'}
       </div>
     </motion.div>
@@ -255,12 +265,12 @@ const ModernBlogContent = ({ content, isDarkMode }) => {
           .replace(/[^\w\s-]/g, '')
           .replace(/\s+/g, '-');
         const sizeClasses = {
-          1: 'text-4xl md:text-5xl font-black mt-16 mb-8',
-          2: 'text-3xl md:text-4xl font-bold mt-12 mb-6',
-          3: 'text-2xl md:text-3xl font-bold mt-10 mb-5',
-          4: 'text-xl md:text-2xl font-semibold mt-8 mb-4',
-          5: 'text-lg md:text-xl font-semibold mt-6 mb-3',
-          6: 'text-base md:text-lg font-semibold mt-4 mb-2',
+          1: 'text-3xl sm:text-4xl md:text-5xl font-black mt-12 sm:mt-16 mb-6 sm:mb-8',
+          2: 'text-2xl sm:text-3xl md:text-4xl font-bold mt-10 sm:mt-12 mb-5 sm:mb-6',
+          3: 'text-xl sm:text-2xl md:text-3xl font-bold mt-8 sm:mt-10 mb-4 sm:mb-5',
+          4: 'text-lg sm:text-xl md:text-2xl font-semibold mt-6 sm:mt-8 mb-3 sm:mb-4',
+          5: 'text-base sm:text-lg md:text-xl font-semibold mt-5 sm:mt-6 mb-2 sm:mb-3',
+          6: 'text-sm sm:text-base md:text-lg font-semibold mt-4 mb-2',
         };
 
         const gradients = {
@@ -273,8 +283,8 @@ const ModernBlogContent = ({ content, isDarkMode }) => {
         };
 
         return `
-          <h${level} id="${id}" class="group relative ${sizeClasses[level]} bg-gradient-to-r ${gradients[level]} bg-clip-text text-transparent">
-            <a href="#${id}" class="absolute -left-10 top-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <h${level} id="${id}" class="group relative ${sizeClasses[level]} bg-gradient-to-r ${gradients[level]} bg-clip-text text-transparent break-words">
+            <a href="#${id}" class="hidden lg:block absolute -left-10 top-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <span class="text-blue-500 text-2xl">#</span>
             </a>
             ${text}
@@ -286,50 +296,50 @@ const ModernBlogContent = ({ content, isDarkMode }) => {
     // Process inline code
     processed = processed.replace(
       /`([^`]+)`/g,
-      '<code class="px-2 py-1 mx-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-mono border border-blue-200 dark:border-gray-600 shadow-sm">$1</code>'
+      '<code class="px-1.5 sm:px-2 py-0.5 sm:py-1 mx-0.5 sm:mx-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 text-blue-600 dark:text-blue-400 rounded text-xs sm:text-sm font-mono border border-blue-200 dark:border-gray-600 shadow-sm break-words">$1</code>'
     );
 
     // Process blockquotes
     processed = processed.replace(
       /^>\s+(.+)$/gm,
-      `<blockquote class="relative border-l-4 border-blue-500 pl-6 pr-6 py-4 my-8 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-r-xl">
-        <div class="absolute left-3 top-4 text-blue-500 opacity-30">
-          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+      `<blockquote class="relative border-l-4 border-blue-500 pl-4 sm:pl-6 pr-4 sm:pr-6 py-3 sm:py-4 my-6 sm:my-8 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-r-xl">
+        <div class="absolute left-2 sm:left-3 top-3 sm:top-4 text-blue-500 opacity-30">
+          <svg class="w-6 sm:w-8 h-6 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
           </svg>
         </div>
-        <p class="text-gray-700 dark:text-gray-300 italic text-lg leading-relaxed">$1</p>
+        <p class="text-gray-700 dark:text-gray-300 italic text-base sm:text-lg leading-relaxed break-words">$1</p>
       </blockquote>`
     );
 
     // Process unordered lists
     processed = processed.replace(
       /^\*\s+(.+)$/gm,
-      '<li class="mb-3 text-gray-700 dark:text-gray-300 flex items-start gap-3"><span class="mt-2 w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex-shrink-0"></span><span>$1</span></li>'
+      '<li class="mb-2 sm:mb-3 text-gray-700 dark:text-gray-300 flex items-start gap-2 sm:gap-3 break-words"><span class="mt-2 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex-shrink-0"></span><span class="flex-1 min-w-0">$1</span></li>'
     );
 
     // Process bold text
     processed = processed.replace(
       /\*\*(.+?)\*\*/g,
-      '<strong class="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-yellow-200 to-yellow-100 dark:from-yellow-900/30 dark:to-transparent px-1 rounded">$1</strong>'
+      '<strong class="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-yellow-200 to-yellow-100 dark:from-yellow-900/30 dark:to-transparent px-0.5 sm:px-1 rounded break-words">$1</strong>'
     );
 
     // Process italic text
     processed = processed.replace(
       /\*(.+?)\*/g,
-      '<em class="italic text-gray-700 dark:text-gray-300">$1</em>'
+      '<em class="italic text-gray-700 dark:text-gray-300 break-words">$1</em>'
     );
 
     // Process links
     processed = processed.replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      '<a href="$2" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-4 decoration-blue-400 hover:decoration-blue-600 transition-all duration-200 font-medium" target="_blank" rel="noopener noreferrer">$1 <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>'
+      '<a href="$2" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-4 decoration-blue-400 hover:decoration-blue-600 transition-all duration-200 font-medium break-words" target="_blank" rel="noopener noreferrer">$1 <svg class="inline w-3 h-3 ml-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>'
     );
 
     // Process paragraphs
     processed = processed.replace(
       /^(?!<[h|blockquote|li])(.*\S.*)$/gm,
-      '<p class="mb-6 text-gray-800 dark:text-gray-200 text-lg leading-relaxed">$1</p>'
+      '<p class="mb-4 sm:mb-6 text-gray-800 dark:text-gray-200 text-base sm:text-lg leading-relaxed break-words">$1</p>'
     );
 
     return processed;
@@ -729,12 +739,12 @@ const ModernBlogDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 overflow-x-hidden w-full">
       <SharedHeader showBackButton={true} backTo="/blog" backLabel="Blog" />
       <Toaster position="bottom-right" />
 
       {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -763,7 +773,7 @@ const ModernBlogDetailPage = () => {
       />
 
       {/* Floating Action Buttons */}
-      <div className="fixed right-6 bottom-6 flex flex-col gap-3 z-40">
+      <div className="fixed right-4 sm:right-6 bottom-6 flex flex-col gap-3 z-40">
         <AnimatePresence>
           {showScrollTop && (
             <motion.button
@@ -773,9 +783,9 @@ const ModernBlogDetailPage = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={scrollToTop}
-              className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all"
+              className="p-3 sm:p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all"
             >
-              <ChevronUp className="w-5 h-5" />
+              <ChevronUp className="w-4 sm:w-5 h-4 sm:h-5" />
             </motion.button>
           )}
         </AnimatePresence>
@@ -784,26 +794,26 @@ const ModernBlogDetailPage = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={toggleBookmark}
-          className={`p-4 rounded-full shadow-2xl transition-all ${
+          className={`p-3 sm:p-4 rounded-full shadow-2xl transition-all ${
             isBookmarked
               ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-blue-500/50'
               : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:shadow-xl'
           }`}
         >
-          <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+          <Bookmark className={`w-4 sm:w-5 h-4 sm:h-5 ${isBookmarked ? 'fill-current' : ''}`} />
         </motion.button>
 
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={toggleLike}
-          className={`p-4 rounded-full shadow-2xl transition-all ${
+          className={`p-3 sm:p-4 rounded-full shadow-2xl transition-all ${
             isLiked
               ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-red-500/50'
               : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:shadow-xl'
           }`}
         >
-          <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 sm:w-5 h-4 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
         </motion.button>
       </div>
 
@@ -811,35 +821,35 @@ const ModernBlogDetailPage = () => {
       <TableOfContents content={post.content} isVisible={showToc && !isFullWidth} />
 
       {/* Main Content */}
-      <main className="relative pt-20 pb-20 overflow-x-hidden">
-        <div className={`mx-auto px-4 sm:px-6 transition-all duration-300 ${
+      <main className="relative pt-20 pb-12 sm:pb-20 w-full overflow-x-hidden">
+        <div className={`mx-auto px-4 sm:px-6 transition-all duration-300 w-full ${
           isFullWidth ? 'max-w-7xl' : 'max-w-4xl'
         }`}>
           {/* Hero Section */}
           <motion.article
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-16"
+            className="mb-12 sm:mb-16 w-full overflow-hidden"
           >
             {/* Category Badge */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 mb-6"
+              className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6"
             >
               <motion.button
                 whileHover={{ x: -5 }}
                 onClick={() => navigate('/blog')}
-                className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="flex items-center gap-1.5 sm:gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm font-medium">Back</span>
+                <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                <span className="text-xs sm:text-sm font-medium">Back</span>
               </motion.button>
 
               <span className="text-gray-300 dark:text-gray-600">•</span>
 
               <span
-                className="px-4 py-1.5 text-sm font-bold text-white rounded-full shadow-lg"
+                className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-bold text-white rounded-full shadow-lg"
                 style={{
                   backgroundColor: getCategoryColor(post?.categoryId) || '#3B82F6',
                 }}
@@ -851,9 +861,9 @@ const ModernBlogDetailPage = () => {
                 <motion.span
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="px-4 py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-sm font-bold rounded-full flex items-center gap-2 shadow-lg"
+                  className="px-3 sm:px-4 py-1 sm:py-1.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs sm:text-sm font-bold rounded-full flex items-center gap-1.5 sm:gap-2 shadow-lg"
                 >
-                  <Star className="w-4 h-4" />
+                  <Star className="w-3 sm:w-4 h-3 sm:h-4" />
                   Featured
                 </motion.span>
               )}
@@ -864,7 +874,7 @@ const ModernBlogDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-300 dark:to-purple-300 mb-6 leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-300 dark:to-purple-300 mb-4 sm:mb-6 leading-tight break-words"
             >
               {post.title}
             </motion.h1>
@@ -875,7 +885,7 @@ const ModernBlogDetailPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed font-light"
+                className="text-base sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-10 leading-relaxed font-light break-words"
               >
                 {post.excerpt}
               </motion.p>
@@ -886,25 +896,25 @@ const ModernBlogDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap items-center gap-6 text-gray-500 dark:text-gray-400 mb-8"
+              className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-6 sm:mb-8"
             >
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span className="font-medium">{post.author || 'Imteaj Sajid'}</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <User className="w-3.5 sm:w-4 h-3.5 sm:h-4 flex-shrink-0" />
+                <span className="font-medium truncate">{post.author || 'Imteaj Sajid'}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(post.publishedAt || post.$createdAt)}</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Calendar className="w-3.5 sm:w-4 h-3.5 sm:h-4 flex-shrink-0" />
+                <span className="truncate">{formatDate(post.publishedAt || post.$createdAt)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Clock className="w-3.5 sm:w-4 h-3.5 sm:h-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">
                   {post.readTime || calculateReadingTime(post.content)} min read
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                <span>{post.views || 0} views</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Eye className="w-3.5 sm:w-4 h-3.5 sm:h-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">{post.views || 0} views</span>
               </div>
             </motion.div>
 
@@ -913,19 +923,19 @@ const ModernBlogDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-wrap items-center gap-4 p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl mb-8"
+              className="flex flex-wrap items-center gap-2 sm:gap-4 p-4 sm:p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl mb-6 sm:mb-8"
             >
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLike}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all ${
                   isLiked
                     ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg shadow-red-500/50'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
-                <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                <Heart className={`w-4 sm:w-5 h-4 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
                 <span>{likes}</span>
               </motion.button>
 
@@ -933,14 +943,14 @@ const ModernBlogDetailPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleBookmark}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all ${
                   isBookmarked
                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/50'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
-                <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                <span>Save</span>
+                <Bookmark className={`w-4 sm:w-5 h-4 sm:h-5 ${isBookmarked ? 'fill-current' : ''}`} />
+                <span className="hidden sm:inline">Save</span>
               </motion.button>
 
               <motion.div
@@ -949,26 +959,26 @@ const ModernBlogDetailPage = () => {
               >
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                  className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
                   onClick={() => {
                     const shareMenu = document.getElementById('share-menu');
                     shareMenu.classList.toggle('hidden');
                   }}
                 >
-                  <Share2 className="w-5 h-5" />
-                  <span>Share</span>
+                  <Share2 className="w-4 sm:w-5 h-4 sm:h-5" />
+                  <span className="hidden sm:inline">Share</span>
                 </motion.button>
 
                 <div
                   id="share-menu"
-                  className="hidden absolute top-full mt-2 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-3 z-10"
+                  className="hidden absolute top-full mt-2 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-3 z-10 min-w-[200px]"
                 >
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleShare('twitter')}
-                      className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center justify-center"
                     >
                       <Twitter className="w-5 h-5" />
                     </motion.button>
@@ -976,7 +986,7 @@ const ModernBlogDetailPage = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleShare('linkedin')}
-                      className="p-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800"
+                      className="p-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 flex items-center justify-center"
                     >
                       <Linkedin className="w-5 h-5" />
                     </motion.button>
@@ -984,7 +994,7 @@ const ModernBlogDetailPage = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleShare('facebook')}
-                      className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      className="p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
                     >
                       <Facebook className="w-5 h-5" />
                     </motion.button>
@@ -992,7 +1002,7 @@ const ModernBlogDetailPage = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleShare('copy')}
-                      className="p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                      className="p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center justify-center"
                     >
                       <LinkIcon className="w-5 h-5" />
                     </motion.button>
@@ -1006,9 +1016,9 @@ const ModernBlogDetailPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowToc(!showToc)}
-                className="px-6 py-3 rounded-xl font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all hidden xl:flex items-center gap-2"
+                className="hidden xl:flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4 sm:w-5 h-4 sm:h-5" />
                 <span>{showToc ? 'Hide' : 'Show'} TOC</span>
               </motion.button>
             </motion.div>
@@ -1019,13 +1029,13 @@ const ModernBlogDetailPage = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
-                className="relative rounded-3xl overflow-hidden shadow-2xl mb-12 group"
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-8 sm:mb-12 group w-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
                 <img
                   src={portfolioService.getFileView(post.featuredImage)}
                   alt={post.title}
-                  className="w-full h-96 md:h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-64 sm:h-96 md:h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
                   onError={(e) => (e.target.style.display = 'none')}
                 />
               </motion.div>
@@ -1037,7 +1047,7 @@ const ModernBlogDetailPage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 lg:p-16 shadow-2xl border border-gray-200/50 dark:border-gray-700/50 mb-12"
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 shadow-2xl border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full overflow-x-hidden"
           >
             <ModernBlogContent content={post.content} isDarkMode={isDarkMode} />
           </motion.div>
@@ -1048,18 +1058,18 @@ const ModernBlogDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-200/50 dark:border-gray-700/50 mb-12"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full"
             >
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <Tag className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center gap-2">
+                <Tag className="w-5 sm:w-6 h-5 sm:h-6 text-blue-600 dark:text-blue-400" />
                 Tagged with
               </h3>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {post.tags.map((tag, index) => (
                   <motion.span
                     key={index}
                     whileHover={{ scale: 1.05, y: -2 }}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold cursor-pointer border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all"
+                    className="px-3 sm:px-5 py-1.5 sm:py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-300 rounded-full text-xs sm:text-sm font-semibold cursor-pointer border border-gray-200 dark:border-gray-600 hover:shadow-lg transition-all"
                   >
                     #{tag}
                   </motion.span>
