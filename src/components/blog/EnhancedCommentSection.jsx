@@ -169,23 +169,23 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-12 shadow-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm mb-12"
+      className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-12 shadow-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm mb-8 sm:mb-12 overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
-              className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-white shadow-lg"
+              className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl text-white shadow-lg flex-shrink-0"
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-5 sm:w-6 h-5 sm:h-6" />
             </motion.div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white break-words">
                 Discussion ({comments.length})
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 break-words">
                 Join the conversation and share your thoughts
               </p>
             </div>
@@ -193,35 +193,35 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           {/* Sort Options */}
-          <select
+          {/* <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="popular">Most Popular</option>
-          </select>
+          </select> */}
 
           {/* Filter Options */}
-          <select
+          {/* <select
             value={filterBy}
             onChange={(e) => setFilterBy(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="all">All Comments</option>
             <option value="main">Main Comments</option>
             <option value="replies">Replies Only</option>
-          </select>
+          </select> */}
 
           {/* Add Comment Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowCommentForm(!showCommentForm)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+            className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all text-xs sm:text-sm font-medium flex-1 sm:flex-none ${
               showCommentForm
                 ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700'
@@ -229,13 +229,13 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
           >
             {showCommentForm ? (
               <>
-                <Minus className="w-4 h-4" />
-                Cancel
+                <Minus className="w-3 sm:w-4 h-3 sm:h-4" />
+                <span className="whitespace-nowrap">Cancel</span>
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4" />
-                Add Comment
+                <Plus className="w-3 sm:w-4 h-3 sm:h-4" />
+                <span className="whitespace-nowrap">Add Comment</span>
               </>
             )}
           </motion.button>
@@ -252,47 +252,47 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="mb-8 overflow-hidden"
           >
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-700/50">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-blue-200 dark:border-blue-700/50 overflow-hidden">
               {replyingTo && (
-                <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    <Reply className="w-4 h-4 inline mr-1" />
+                <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg sm:rounded-xl">
+                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 break-words">
+                    <Reply className="w-3 sm:w-4 h-3 sm:h-4 inline mr-1" />
                     Replying to a comment
                   </p>
                 </div>
               )}
 
-              <form onSubmit={handleSubmitComment} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmitComment} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                       Name *
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <User className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                       <input
                         type="text"
                         required
                         value={commentForm.authorName}
                         onChange={(e) => handleFormChange('authorName', e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="Your name"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                       Email *
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Mail className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                       <input
                         type="email"
                         required
                         value={commentForm.authorEmail}
                         onChange={(e) => handleFormChange('authorEmail', e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder="your@email.com"
                       />
                     </div>
@@ -300,23 +300,23 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                     Website (optional)
                   </label>
                   <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Globe className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                     <input
                       type="url"
                       value={commentForm.authorWebsite}
                       onChange={(e) => handleFormChange('authorWebsite', e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="https://yourwebsite.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-2">
                     Comment *
                   </label>
                   <textarea
@@ -324,20 +324,20 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                     value={commentForm.content}
                     onChange={(e) => handleFormChange('content', e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                     placeholder="Share your thoughts..."
                   />
-                  <div className="flex justify-between items-center mt-2">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Be respectful and constructive in your comments
+                  <div className="flex justify-between items-center mt-1.5 sm:mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 break-words">
+                      Be respectful and constructive
                     </p>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
                       {commentForm.content.length}/1000
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-4">
                   <div className="flex items-center gap-4">
                     {replyingTo && (
                       <button
@@ -346,14 +346,14 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                           setReplyingTo(null);
                           setCommentForm(prev => ({ ...prev, parentId: null, isReply: false }));
                         }}
-                        className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        className="text-xs sm:text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       >
                         Cancel Reply
                       </button>
                     )}
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 sm:gap-3">
                     <motion.button
                       type="button"
                       whileHover={{ scale: 1.05 }}
@@ -370,7 +370,7 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                           isReply: false
                         });
                       }}
-                      className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       Cancel
                     </motion.button>
@@ -380,14 +380,14 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       disabled={loading}
-                      className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 text-xs sm:text-sm bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50"
                     >
                       {loading ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-3 sm:w-4 h-3 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
-                        <Send className="w-4 h-4" />
+                        <Send className="w-3 sm:w-4 h-3 sm:h-4" />
                       )}
-                      {replyingTo ? 'Post Reply' : 'Post Comment'}
+                      <span className="whitespace-nowrap">{replyingTo ? 'Post Reply' : 'Post Comment'}</span>
                     </motion.button>
                   </div>
                 </div>
@@ -398,40 +398,40 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
       </AnimatePresence>
 
       {/* Comments List */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {loading && comments.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-              <p className="text-gray-500 dark:text-gray-400">Loading comments...</p>
+          <div className="flex items-center justify-center py-8 sm:py-12">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-5 sm:w-6 h-5 sm:h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">Loading comments...</p>
             </div>
           </div>
         ) : parentComments.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-12"
+            className="text-center py-8 sm:py-12"
           >
-            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-8 h-8 text-gray-400" />
+            <div className="w-16 sm:w-20 h-16 sm:h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <MessageCircle className="w-7 sm:w-8 h-7 sm:h-8 text-gray-400" />
             </div>
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
               No comments yet
             </h4>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4 sm:mb-6 px-4">
               Be the first to share your thoughts on this post!
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCommentForm(true)}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg sm:rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all"
             >
               Start Discussion
             </motion.button>
           </motion.div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {parentComments.map((comment, index) => (
               <motion.div
                 key={comment.$id}
@@ -441,25 +441,25 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                 className="group"
               >
                 {/* Main Comment */}
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                  <div className="flex items-start gap-4">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors overflow-hidden">
+                  <div className="flex items-start gap-2 sm:gap-4">
                     {/* Avatar */}
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                      <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-lg">
                         {comment.authorName.charAt(0).toUpperCase()}
                       </div>
                     </div>
 
                     {/* Comment Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-semibold text-gray-900 dark:text-white">
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                        <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate">
                           {comment.authorWebsite ? (
                             <a
                               href={comment.authorWebsite}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors break-words"
                             >
                               {comment.authorName}
                             </a>
@@ -467,36 +467,36 @@ const EnhancedCommentSection = ({ postId, initialComments = [] }) => {
                             comment.authorName
                           )}
                         </h4>
-                        <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {formatDate(comment.$createdAt)}
+                        <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                          <Calendar className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{formatDate(comment.$createdAt)}</span>
                         </span>
                       </div>
 
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                      <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 break-words overflow-wrap-anywhere">
                         {comment.content}
                       </p>
 
                       {/* Comment Actions */}
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 sm:gap-4">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={handleLikeComment}
-                          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                          className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                         >
-                          <Heart className="w-4 h-4" />
-                          {comment.likes || 0}
+                          <Heart className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" />
+                          <span className="whitespace-nowrap">{comment.likes || 0}</span>
                         </motion.button>
 
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleReply(comment.$id)}
-                          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                          className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                         >
-                          <Reply className="w-4 h-4" />
-                          Reply
+                          <Reply className="w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0" />
+                          <span className="whitespace-nowrap">Reply</span>
                         </motion.button>
 
                         <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">

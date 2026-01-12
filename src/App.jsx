@@ -11,6 +11,7 @@ import BlogDetailPage from './components/blog/BlogDetailPage';
 import EnhancedBlogDetailPage from './components/blog/EnhancedBlogDetailPage';
 import ModernBlogPage from './components/blog/ModernBlogPage';
 import ModernBlogDetailPage from './components/blog/ModernBlogDetailPage';
+import UltraModernBlogDetailPage from './components/blog/UltraModernBlogDetailPage';
 
 // Admin Components
 import Login from './components/auth/Login';
@@ -48,7 +49,7 @@ function App() {
             <Route path="/" element={<Portfolio />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/demo" element={<ModernBlogPage />} />
-            <Route path="/blog/:slug" element={<ModernBlogDetailPage />} />
+            <Route path="/blog/:slug" element={<UltraModernBlogDetailPage />} />
 
             {/* Test Route */}
             <Route path="/test" element={<AppwriteTest />} />
