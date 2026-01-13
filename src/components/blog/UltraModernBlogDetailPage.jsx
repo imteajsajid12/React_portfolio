@@ -416,13 +416,13 @@ const UltraModernBlogContent = ({ content, isDarkMode }) => {
     // Process inline code
     processed = processed.replace(
       /`([^`]+)`/g,
-      '<code class="px-1.5 sm:px-2 py-0.5 sm:py-1 mx-0.5 sm:mx-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 text-blue-600 dark:text-blue-400 rounded text-xs sm:text-sm font-mono border border-blue-200 dark:border-gray-600 break-words relative group"><span class="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>$1</code>'
+      '<code class="px-1.5 sm:px-2 py-0.5 sm:py-1 mx-0.5 sm:mx-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 text-blue-600 dark:text-blue-300 rounded text-xs sm:text-sm font-mono border border-blue-200 dark:border-gray-600 break-words relative group"><span class="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>$1</code>'
     );
 
     // Process blockquotes
     processed = processed.replace(
       /^>\s+(.+)$/gm,
-      `<blockquote class="relative border-l-4 border-blue-500 pl-4 sm:pl-6 pr-4 sm:pr-6 py-3 sm:py-4 my-6 sm:my-8 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20 dark:to-transparent rounded-r-xl">
+      `<blockquote class="relative border-l-4 border-blue-500 pl-4 sm:pl-6 pr-4 sm:pr-6 py-3 sm:py-4 my-6 sm:my-8 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/30 dark:to-transparent rounded-r-xl">
         <div class="absolute left-2 sm:left-3 top-3 sm:top-4 text-blue-500 opacity-30">
           <svg class="w-6 sm:w-8 h-6 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
@@ -447,7 +447,7 @@ const UltraModernBlogContent = ({ content, isDarkMode }) => {
     // Process bold text
     processed = processed.replace(
       /\*\*(.+?)\*\*/g,
-      '<strong class="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-yellow-200 to-yellow-100 dark:from-yellow-900/30 dark:to-transparent px-0.5 sm:px-1 rounded break-words">$1</strong>'
+      '<strong class="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-yellow-200 to-yellow-100 dark:from-gray-700 dark:to-gray-600 px-0.5 sm:px-1 rounded break-words">$1</strong>'
     );
 
     // Process italic text
@@ -1070,7 +1070,7 @@ const UltraModernBlogDetailPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-wrap items-center gap-2 sm:gap-4 p-4 sm:p-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8"
+              className="flex flex-wrap items-center gap-2 sm:gap-4 p-4 sm:p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-200 dark:border-gray-700 mb-6 sm:mb-8"
             >
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -1199,23 +1199,23 @@ const UltraModernBlogDetailPage = () => {
             )}
           </motion.article>
 
-          {/* Blog Content - Reduced Shadow */}
+          {/* Blog Content - Improved Dark Mode Visibility */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full overflow-x-hidden"
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full overflow-x-hidden"
           >
             <UltraModernBlogContent content={post.content} isDarkMode={isDarkMode} />
           </motion.div>
 
-          {/* Tags - Reduced Shadow */}
+          {/* Tags - Improved Dark Mode Visibility */}
           {post.tags && post.tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50 dark:border-gray-700/50 mb-8 sm:mb-12 w-full"
             >
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center gap-2">
                 <Tag className="w-5 sm:w-6 h-5 sm:h-6 text-blue-600 dark:text-blue-400" />
@@ -1249,13 +1249,13 @@ const UltraModernBlogDetailPage = () => {
             />
           </motion.div>
 
-          {/* Related Posts - Reduced Shadow */}
+          {/* Related Posts - Improved Dark Mode Visibility */}
           {relatedPosts.length > 0 && (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
-              className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-gray-200/50 dark:border-gray-700/50 mb-12"
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-gray-200/50 dark:border-gray-700/50 mb-12"
             >
               <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
                 <Sparkles className="w-8 h-8 text-yellow-500" />
@@ -1280,7 +1280,7 @@ const UltraModernBlogDetailPage = () => {
                         }`
                       )
                     }
-                    className="bg-gradient-to-br from-white/80 to-gray-50/80 dark:from-gray-800/80 dark:to-gray-900/80 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 cursor-pointer group"
+                    className="bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-800/90 dark:to-gray-900/90 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 cursor-pointer group"
                   >
                     {relatedPost.featuredImage && (
                       <div className="h-48 overflow-hidden relative">
@@ -1317,13 +1317,13 @@ const UltraModernBlogDetailPage = () => {
             </motion.section>
           )}
 
-          {/* Navigation - Reduced Shadow */}
+          {/* Navigation - Improved Dark Mode Visibility */}
           {(nextPost || prevPost) && (
             <motion.nav
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              className="bg-gradient-to-r from-blue-50/50 via-purple-50/50 to-pink-50/50 dark:from-gray-800/50 dark:via-gray-800/50 dark:to-gray-900/50 rounded-3xl p-8 border border-gray-200/50 dark:border-gray-700/50"
+              className="bg-gradient-to-r from-blue-50/60 via-purple-50/60 to-pink-50/60 dark:from-gray-800/60 dark:via-gray-800/60 dark:to-gray-900/60 rounded-3xl p-8 border border-gray-200/50 dark:border-gray-700/50"
             >
               <div className="flex justify-between items-center gap-6">
                 {prevPost ? (
@@ -1341,7 +1341,7 @@ const UltraModernBlogDetailPage = () => {
                         }`
                       )
                     }
-                    className="flex items-center gap-4 p-6 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all max-w-sm group"
+                    className="flex items-center gap-4 p-6 bg-white/90 dark:bg-gray-800/90 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all max-w-sm group"
                   >
                     <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition-colors" />
                     <div className="text-left">
@@ -1372,7 +1372,7 @@ const UltraModernBlogDetailPage = () => {
                         }`
                       )
                     }
-                    className="flex items-center gap-4 p-6 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all max-w-sm group"
+                    className="flex items-center gap-4 p-6 bg-white/90 dark:bg-gray-800/90 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all max-w-sm group"
                   >
                     <div className="text-right">
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
